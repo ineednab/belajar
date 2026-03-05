@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO Meta Tags -->
+  <title>Nabila Rahmadani — CV</title>
+  <meta name="description" content="CV of Nabila Rahmadani — Founder, Content Creator, and Computer Science graduate specializing in digital ventures, influencer marketplaces, and financial literacy content.">
+  <meta name="keywords" content="Nabila Rahmadani, CV, resume, founder, Buzzeryok, content creator, influencer marketing, UX, Indonesia">
+  <meta name="author" content="Nabila Rahmadani">
+  <link rel="canonical" href="https://nabilarahmadani.com">
+
+  <!-- Open Graph Tags -->
+  <meta property="og:title" content="Nabila Rahmadani — CV">
+  <meta property="og:description" content="Founder of Buzzeryok & Bizy Influencer. CS graduate, content creator with 710K+ followers, and UX researcher.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nabilarahmadani.com">
+  <meta property="og:image" content="https://nabilarahmadani.com/preview-image.png">
+
+  <!-- Twitter Card Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Nabila Rahmadani — CV">
+  <meta name="twitter:description" content="Founder of Buzzeryok & Bizy Influencer. CS graduate, content creator with 710K+ followers, and UX researcher.">
+  <meta name="twitter:image" content="https://nabilarahmadani.com/preview-image.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===========================
+       CSS VARIABLES & RESET
+    =========================== */
+    :root {
+      --cream: #F5F0E8;
+      --ink: #1A1714;
+      --muted: #7A746C;
+      --accent: #C4572A;
+      --accent-light: #E8C4B4;
+      --border: #D8D0C4;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --mono: 'DM Mono', 'Courier New', monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--cream);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===========================
+       LAYOUT
+    =========================== */
+    .page-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 60px 40px 100px;
+    }
+
+    /* ===========================
+       HEADER
+    =========================== */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 40px;
+      margin-bottom: 56px;
+      position: relative;
+    }
+
+    .header-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    header h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      margin-bottom: 20px;
+    }
+
+    header h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .header-title {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      margin-bottom: 24px;
+    }
+
+    .contact-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 20px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .contact-line a {
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .contact-line a:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .contact-line span::before {
+      content: "·";
+      margin-right: 20px;
+      color: var(--border);
+    }
+
+    .contact-line span:first-child::before {
+      display: none;
+    }
+
+    /* ===========================
+       SECTION LAYOUT
+    =========================== */
+    section {
+      margin-bottom: 52px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .section-rule {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ===========================
+       PROFILE / ABOUT
+    =========================== */
+    #about p {
+      font-size: 1.2rem;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--ink);
+      max-width: 680px;
+    }
+
+    #about p em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    /* ===========================
+       ENTRY (reusable for edu, work)
+    =========================== */
+    .entry {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 0 32px;
+      margin-bottom: 36px;
+      padding-bottom: 36px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .entry:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .entry-meta {
+      padding-top: 3px;
+    }
+
+    .entry-date {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+      letter-spacing: 0.05em;
+    }
+
+    .entry-org {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .entry-content h3 {
+      font-family: var(--serif);
+      font-size: 1.3rem;
+      font-weight: 400;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .entry-content h4 {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .entry-content p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+
+    .entry-content ul {
+      list-style: none;
+      margin-top: 10px;
+    }
+
+    .entry-content ul li {
+      font-size: 0.92rem;
+      color: var(--ink);
+      line-height: 1.7;
+      padding-left: 16px;
+      position: relative;
+      margin-bottom: 4px;
+    }
+
+    .entry-content ul li::before {
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 0.8rem;
+    }
+
+    /* ===========================
+       EDUCATION
+    =========================== */
+    #education .thesis {
+      font-size: 0.88rem;
+      font-style: italic;
+      color: var(--muted);
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    /* ===========================
+       SKILLS
+    =========================== */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 24px;
+    }
+
+    .skill-group h3 {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .skill-group ul {
+      list-style: none;
+    }
+
+    .skill-group ul li {
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: var(--ink);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2px;
+    }
+
+    /* ===========================
+       BRAND PARTNERSHIPS
+    =========================== */
+    .partnerships-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .partnership-card {
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+    }
+
+    .partnership-card h4 {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .partnership-card .period {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .partnership-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ===========================
+       AWARDS
+    =========================== */
+    .award-row {
+      display: flex;
+      gap: 24px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: baseline;
+    }
+
+    .award-row:last-child {
+      border-bottom: none;
+    }
+
+    .award-year {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      min-width: 60px;
+      letter-spacing: 0.05em;
+    }
+
+    .award-desc {
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* ===========================
+       VOLUNTEER
+    =========================== */
+    .volunteer-row {
+      display: flex;
+      gap: 24px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: baseline;
+    }
+
+    .volunteer-row:last-child {
+      border-bottom: none;
+    }
+
+    .volunteer-date {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      min-width: 80px;
+      letter-spacing: 0.04em;
+    }
+
+    .volunteer-desc {
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* ===========================
+       FOOTER
+    =========================== */
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 32px;
+      margin-top: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer p {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    footer .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    footer .footer-links a {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+    }
+
+    footer .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* ===========================
+       RESPONSIVE
+    =========================== */
+    @media (max-width: 640px) {
+      .page-wrapper {
+        padding: 40px 24px 80px;
+      }
+
+      .entry {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .partnerships-grid {
+        grid-template-columns: 1fr;
+      }
+
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-wrapper">
+
+    <!-- ========================
+         HEADER
+    ========================= -->
+    <header>
+      <p class="header-eyebrow">Curriculum Vitae</p>
+      <h1>Nabila <em>Rahmadani</em></h1>
+      <p class="header-title">Founder · Content Creator</p>
+      <address class="contact-line">
+        <span>Jakarta, Indonesia</span>
+        <span><a href="tel:+6285117323662">+62 851-1732-3662</a></span>
+        <span><a href="mailto:nabilarahmadhani@gmail.com">nabilarahmadhani@gmail.com</a></span>
+        <span><a href="https://instagram.com/ininabnabb" target="_blank" rel="noopener">Instagram</a></span>
+        <span><a href="https://tiktok.com/ininabnabb" target="_blank" rel="noopener">TikTok</a></span>
+        <span><a href="https://www.linkedin.com/in/nabilarahmadanii/" target="_blank" rel="noopener">LinkedIn</a></span>
+        <span><a href="https://www.youtube.com/nabnabrahmadani" target="_blank" rel="noopener">YouTube</a></span>
+      </address>
+    </header>
+
+    <main>
+
+      <!-- ========================
+           PROFILE
+      ========================= -->
+      <!-- About / Profile Section -->
+      <section id="about" aria-labelledby="about-heading">
+        <div class="section-header">
+          <span class="section-label">Profile</span>
+          <div class="section-rule" role="presentation"></div>
+        </div>
+        <p>
+          Computer Science graduate with UX research experience and a track record in building digital ventures.
+          Founded <em>Buzzeryok</em> (approx. USD 5K–10K monthly revenue), leading a network of 1,000+ freelance
+          creators to deliver conversion-driven campaigns. Supported 15,000+ user acquisitions for fintech products
+          through content partnerships, and built an education-driven audience of 710K+ followers through financial
+          literacy content. Seeking Master's training to build scalable, user-centered platforms and marketplaces
+          that solve efficiency and trust gaps in creator-based growth operations.
+        </p>
+      </section>
+
+      <!-- ========================
+           EDUCATION
+      ========================= -->
+      <!-- Education Section -->
+      <section id="education" aria-labelledby="education-heading">
+        <div class="section-header">
+          <span id="education-heading" class="section-label">Education</span>
+          <div class="section-rule" role="presentation"></div>
+        </div>
+
+        <article class="entry">
+          <div class="entry-meta">
+            <p class="entry-date">2016 — 2021</p>
+            <p class="entry-org">IPB University</p>
+          </div>
+          <div class="entry-content">
+            <h3>B.Sc. Computer Science</h3>
+            <h4>GPA 3.19 / 4.00</h4>
+            <p class="thesis">Undergraduate Thesis: Designing the User Experience of Kumpulin Application as a Solution for Non-Profit Organizational Financial Management Using Design Thinking Method</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ========================
+           SKILLS
+      ========================= -->
+      <!-- Skills Section -->
+      <section id="skills" aria-labelledby="skills-heading">
+        <div class="section-header">
+          <span id="skills-heading" class="section-label">Skills</span>
+          <div class="section-rule" role="presentation"></div>
+        </div>
+
+        <div class="skills-grid">
+            <div class="skill-group">
+            <h3>Business</h3>
+            <ul>
+              <li>Campaign management</li>
+              <li>Budget management</li>
+              <li>Team leadership</li>
+              <li>KOL / Influencer Management</li>
+            </ul>
+          </div>
+          <div class="skill-group">
+            <h3>Technical</h3>
+            <ul>
+              <li>UX Research</li>
+              <li>User Research</li>
+              <li>Frontend Development</li>
+              <li>HTML / CSS</li>
+            </ul>
+          </div>
+          <div class="skill-group">
+            <h3>Content & Growth</h3>
+            <ul>
+              <li>Content strategy</li>
+              <li>Influencer marketing</li>
+              <li>Financial literacy content</li>
+              <li>Community building</li>
+              <li>Performance content</li>
+            </ul>
+          </div>
+          <div class="skill-group">
+            <h3>Tools</h3>
+            <ul>
+              <li>Figma</li>
+              <li>Notion</li>
+              <li>Framer</li>
+              <li>Google Workspace</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================
+           WORK EXPERIENCE
+      ========================= -->
+      <!-- Career History Section -->
+      <section id="career-history" aria-labelledby="career-heading">
+        <div class="section-header">
+          <span id="career-heading" class="section-label">Career History</span>
+          <div class="section-rule" role="presentation"></div>
+        </div>
+
+        <!-- Buzzeryok -->
+        <article class="entry">
+          <div class="entry-meta">
+            <p class="entry-date">Oct 2022 — Present</p>
+            <p class="entry-org">Buzzeryok</p>
+          </div>
+          <div class="entry-content">
+            <h3>Founder &amp; Business Lead</h3>
+            <p>Community-driven operations connecting brands with vetted freelancers to deliver conversion-focused campaigns.</p>
+            <ul>
+              <li>Built and scaled a B2B business serving 20+ clients/month, generating approx. USD 5K–10K monthly revenue</li>
+              <li>Led an 8-person core team and trained 30+ team members; coordinated a network of 1,000+ freelancers through SOP-driven workflow</li>
+              <li>Owned end-to-end campaign operations from briefing and creator coordination to publishing QC, reporting, and optimization</li>
+              <li>Managed campaign budgets of USD 100–3,300 per campaign; partnered with Paragon Group, Aladin Bank, and others</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Bizy Influencer -->
+        <article class="entry">
+          <div class="entry-meta">
+            <p class="entry-date">Aug 2024 — Present</p>
+            <p class="entry-org">Bizy Influencer</p>
+          </div>
+          <div class="entry-content">
+            <h3>Founder &amp; KOL Operations Lead</h3>
+            <ul>
+              <li>Owned end-to-end influencer marketing delivery: client intake, team coordination, and execution</li>
+              <li>Delivered Influencer Marketing &amp; Offline Activation projects for Oskadon, Cimory Yogurt, Li Pao Minipao, and other brands</li>
+              <li>Led KOL sourcing, engagement, and compliance to ensure high-quality, on-time campaign delivery</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Digital Content Creator -->
+        <article class="entry">
+          <div class="entry-meta">
+            <p class="entry-date">Apr 2019 — Present</p>
+            <p class="entry-org">Self</p>
+          </div>
+          <div class="entry-content">
+            <h3>Digital Content Creator</h3>
+            <h4>Side Hustle &amp; Personal Finance Education</h4>
+            <ul>
+              <li>Built an education-driven audience of 710K+ followers and generated 30M+ video views across YouTube (450K), TikTok (160K), and Instagram (100K)</li>
+              <li>Produced 500+ educational videos on side hustles, digital income strategies, and personal finance for young audiences</li>
+              <li>Supported 15,000+ user acquisitions for fintech platforms through performance-oriented content partnerships (2020–2023)</li>
+              <li>Recognized with a YouTube Silver Play Button for reaching 100,000 subscribers (Jan 2020)</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- UX Research Intern -->
+        <article class="entry">
+          <div class="entry-meta">
+            <p class="entry-date">Jul 2020 — Oct 2020</p>
+            <p class="entry-org">PT Pricebook Indonesia</p>
+          </div>
+          <div class="entry-content">
+            <h3>UX Research Intern</h3>
+            <p>Supported UX research initiatives including user interviews, usability testing, surveys, and qualitative analysis. Synthesized research findings and contributed insights for product improvement recommendations.</p>
+          </div>
+        </article>
+
+        <!-- Frontend Developer Intern -->
+        <article class="entry">
+          <div class="entry-meta">
+            <p class="entry-date">Jun 2019 — Aug 2019</p>
+            <p class="entry-org">IPB Graduate School</p>
+          </div>
+          <div class="entry-content">
+            <h3>Frontend Developer Intern</h3>
+            <p>Developed a homepage and academic letter tracking system with responsive UI in collaboration with design and backend teams. Implemented responsive and visually consistent interfaces to support smooth user experiences.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ========================
+           BRAND PARTNERSHIPS
+      ========================= -->
+      <!-- Selected Brand Partnerships Section -->
+      <section id="partnerships" aria-labelledby="partnerships-heading">
+        <div class="section-header">
+          <span id="partnerships-heading" class="section-label">Selected Brand Partnerships</span>
+          <div class="section-rule" role="presentation"></div>
+        </div>
+
+        <div class="partnerships-grid">
+          <article class="partnership-card">
+            <h4>Pluang</h4>
+            <p class="period">Aug 2021 — Apr 2023 · Brand Ambassador</p>
+            <p>Educational content on investing (US stocks, mutual funds, gold); supported acquisition outcomes (installs &amp; sign-ups).</p>
+          </article>
+          <article class="partnership-card">
+            <h4>Pintu</h4>
+            <p class="period">Jul 2021 — Apr 2023 · Content Creator</p>
+            <p>Created 30+ finance education videos; contributed to 5,000 new users during promotion period.</p>
+          </article>
+          <article class="partnership-card">
+            <h4>Ajaib</h4>
+            <p class="period">Aug 2020 — Jul 2021 · Brand Ambassador</p>
+            <p>Developed awareness content on investment products; contributed to 10,000 new users during the campaign period.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ========================
+           VOLUNTEER
+      ========================= -->
+      <!-- Volunteer / Speaking Section -->
+      <section id="volunteer" aria-labelledby="volunteer-heading">
+        <div class="section-header">
+          <span id="volunteer-heading" class="section-label">Speaking &amp; Volunteer</span>
+          <div class="section-rule" role="presentation"></div>
+        </div>
+
+        <div class="volunteer-row">
+          <span class="volunteer-date">Nov 2020</span>
+          <span class="volunteer-desc">Guest Speaker at AVANA — Sustaining Sales Growth During a Crisis</span>
+        </div>
+        <div class="volunteer-row">
+          <span class="volunteer-date">Sept 2021</span>
+          <span class="volunteer-desc">Guest Speaker at CEDEA — Content Creation Strategy &amp; TikTok FYP</span>
+        </div>
+        <div class="volunteer-row">
+          <span class="volunteer-date">Mar 2022</span>
+          <span class="volunteer-desc">Guest Speaker at Tribunnews — Using the Internet to Build Online Income Streams</span>
+        </div>
+      </section>
+
+      <!-- ========================
+           AWARDS
+      ========================= -->
+      <!-- Awards & Recognition Section -->
+      <section id="awards" aria-labelledby="awards-heading">
+        <div class="section-header">
+          <span id="awards-heading" class="section-label">Awards &amp; Recognition</span>
+          <div class="section-rule" role="presentation"></div>
+        </div>
+
+        <div class="award-row">
+          <span class="award-year">2017–18</span>
+          <span class="award-desc">Academic Achievement Scholarship, IPB University</span>
+        </div>
+        <div class="award-row">
+          <span class="award-year">May 2020</span>
+          <span class="award-desc">UI/UX Design Competition Semifinalist (Top 10 nationally) — UNITY 8, Universitas Negeri Yogyakarta</span>
+        </div>
+        <div class="award-row">
+          <span class="award-year">Jan 2020</span>
+          <span class="award-desc">YouTube Creator Recognition — Silver Play Button (100,000+ subscribers)</span>
+        </div>
+        <div class="award-row">
+          <span class="award-year">2026</span>
+          <span class="award-desc">Awardee — DBS Coding Camp 2026, AI Engineer Path</span>
+        </div>
+        <div class="award-row">
+          <span class="award-year">May 2025</span>
+          <span class="award-desc">Favorite Project Award — GenMatic × TikTok Shop National Delegate Cohort</span>
+        </div>
+      </section>
+
+      <!-- Languages Section -->
+      <section id="languages" aria-labelledby="languages-heading">
+        <div class="section-header">
+          <span id="languages-heading" class="section-label">Languages</span>
+          <div class="section-rule" role="presentation"></div>
+        </div>
+        <div class="award-row">
+          <span class="award-year">English</span>
+          <span class="award-desc">Professional proficiency — IELTS 7.0</span>
+        </div>
+        <div class="award-row">
+          <span class="award-year">Indonesian</span>
+          <span class="award-desc">Native</span>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ========================
+         FOOTER
+    ========================= -->
+    <footer>
+      <p>© 2025 Nabila Rahmadani · Jakarta, Indonesia</p>
+      <nav class="footer-links" aria-label="Social media links">
+        <a href="https://instagram.com/ininabnabb" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://tiktok.com/ininabnabb" target="_blank" rel="noopener">TikTok</a>
+        <a href="https://www.linkedin.com/in/nabilarahmadanii/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.youtube.com/nabnabrahmadani" target="_blank" rel="noopener">YouTube</a>
+      </nav>
+    </footer>
+
+  </div>
+</body>
+</html>
