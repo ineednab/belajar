@@ -1,5 +1,5 @@
 import { getSchemaVersion, SCHEMA_VERSION } from '../migrations';
-import { openEncryptedDatabase, type DatabaseOpenDeps } from '../open';
+import { deleteAllData, openEncryptedDatabase, type DatabaseOpenDeps } from '../open';
 import type { Db } from '../types';
 import { createTestDb, type TestDb } from './test-db';
 
@@ -71,6 +71,10 @@ function fakeEnvironment(options: {
       events.push('delete');
       fileKey = null;
     },
+    deleteKey: async () => {
+      events.push('deleteKey');
+      storedKey = null;
+    },
     requireEncryption: true,
     warn: jest.fn(),
   };
@@ -140,5 +144,33 @@ describe('openEncryptedDatabase', () => {
     const result = await openEncryptedDatabase(env.deps);
     expect(result.encrypted).toBe(false);
     expect(env.deps.warn).toHaveBeenCalledWith(expect.stringMatching(/NOT encrypted/));
+  });
+});
+
+describe('deleteAllData', () => {
+  it('closes the connection, deletes the file and then the key, and the next open starts fresh', async () => {
+    const env = fakeEnvironment({ storedKey: EXISTING_KEY, fileKey: EXISTING_KEY });
+    const { db } = await openEncryptedDatabase(env.deps);
+
+    await deleteAllData(db, env.deps);
+    expect(env.events).toEqual(['open', 'delete', 'deleteKey']);
+    expect(env.opened[0].closed).toBe(true);
+    expect(env.getStoredKey()).toBeNull();
+
+    const reopened = await openEncryptedDatabase(env.deps);
+    expect(env.events.slice(3)).toEqual(['storeKey', 'open']);
+    expect(env.getStoredKey()).toBe(NEW_KEY);
+    expect(reopened.resetUnreadable).toBe(false);
+  });
+
+  it('keeps the key when the file could not be deleted, so nothing becomes unreadable', async () => {
+    const env = fakeEnvironment({ storedKey: EXISTING_KEY, fileKey: EXISTING_KEY });
+    const { db } = await openEncryptedDatabase(env.deps);
+    env.deps.deleteDatabase = async () => {
+      throw new Error('File busy');
+    };
+
+    await expect(deleteAllData(db, env.deps)).rejects.toThrow('File busy');
+    expect(env.getStoredKey()).toBe(EXISTING_KEY);
   });
 });

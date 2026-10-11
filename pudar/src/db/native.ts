@@ -23,6 +23,7 @@ export const nativeDatabaseDeps: DatabaseOpenDeps = {
   readKey: () => SecureStore.getItemAsync(KEY_NAME, KEY_OPTIONS),
   generateKey: async () => toHex(await Crypto.getRandomBytesAsync(32)),
   storeKey: (key) => SecureStore.setItemAsync(KEY_NAME, key, KEY_OPTIONS),
+  deleteKey: () => SecureStore.deleteItemAsync(KEY_NAME, KEY_OPTIONS),
   openDatabase: () => SQLite.openDatabaseAsync(DATABASE_NAME),
   deleteDatabase: () => SQLite.deleteDatabaseAsync(DATABASE_NAME),
   requireEncryption: !__DEV__,

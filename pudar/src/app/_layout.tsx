@@ -43,7 +43,8 @@ export default function RootLayout() {
     return <StartupError error={database.error} onRetry={database.retry} />;
   }
   return (
-    <DatabaseProvider value={{ db: database.db, encrypted: database.encrypted }}>
+    <DatabaseProvider
+      value={{ db: database.db, encrypted: database.encrypted, deleteAllData: database.deleteAllData }}>
       <ProfilesProvider>
         <ThemeProvider value={navigationTheme}>
           <StatusBar style="dark" />
@@ -68,6 +69,9 @@ export default function RootLayout() {
             <Stack.Screen name="profile/new" options={{ title: 'Pudar baru', presentation: 'modal' }} />
             <Stack.Screen name="profile/[id]" options={{ title: 'Ubah Pudar', presentation: 'modal' }} />
             <Stack.Screen name="entry/[id]" options={{ title: '', headerBackTitle: 'Kenangan' }} />
+            {['settings/fading', 'settings/privacy', 'settings/support', 'settings/delete'].map((name) => (
+              <Stack.Screen key={name} name={name} options={{ title: '', headerBackTitle: 'Pengaturan' }} />
+            ))}
           </Stack>
         </ThemeProvider>
       </ProfilesProvider>

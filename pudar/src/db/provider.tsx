@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import { Alert, AppState } from 'react-native';
 
 import { nativeDatabaseDeps } from './native';
-import { openEncryptedDatabase, type OpenedDatabase } from './open';
+import { deleteAllData, openEncryptedDatabase, type OpenedDatabase } from './open';
 import { purgeExpired } from './purge';
 import type { Db } from './types';
 
@@ -11,6 +11,8 @@ type DatabaseContextValue = {
   encrypted: boolean;
   /** Bumped when a purge erased text while the app was running, so screens reload. */
   purgeVersion: number;
+  /** "Hapus semua data": erases the file and key, then reopens as a first launch. */
+  deleteAllData(): Promise<void>;
 };
 
 type OpenedValue = Omit<DatabaseContextValue, 'purgeVersion'>;
@@ -49,6 +51,22 @@ export function useOpenDatabase(): DatabaseState {
     setAttempt((n) => n + 1);
   }, []);
 
+  const deleteAll = useCallback(async (db: Db) => {
+    // Unmount every screen first, so nothing reads or writes while the connection closes.
+    setState({ status: 'loading' });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    opening = null;
+    try {
+      await deleteAllData(db, nativeDatabaseDeps);
+    } catch {
+      Alert.alert(
+        'Belum semua terhapus',
+        'Ada data yang belum berhasil dihapus. Coba lagi dari Pengaturan.',
+      );
+    }
+    setAttempt((n) => n + 1);
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     openOnce().then(
@@ -56,7 +74,7 @@ export function useOpenDatabase(): DatabaseState {
         if (cancelled) {
           return;
         }
-        setState({ status: 'ready', db, encrypted });
+        setState({ status: 'ready', db, encrypted, deleteAllData: () => deleteAll(db) });
         if (resetUnreadable) {
           Alert.alert(
             'Memulai dari awal',
@@ -77,7 +95,7 @@ export function useOpenDatabase(): DatabaseState {
     return () => {
       cancelled = true;
     };
-  }, [attempt, retry]);
+  }, [attempt, retry, deleteAll]);
 
   return state;
 }

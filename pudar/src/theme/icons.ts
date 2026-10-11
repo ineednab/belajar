@@ -24,4 +24,10 @@ export const ICONS = {
   lockOpen: { sf: 'lock.open', fallback: 'lock-open-variant-outline' },
   letGo: { sf: 'wind', fallback: 'weather-windy' },
   plus: { sf: 'plus', fallback: 'plus' },
+  hourglass: { sf: 'hourglass', fallback: 'timer-sand' },
+  privacy: { sf: 'lock.shield', fallback: 'shield-lock-outline' },
+  heart: { sf: 'heart', fallback: 'heart-outline' },
+  trash: { sf: 'trash', fallback: 'trash-can-outline' },
+  external: { sf: 'arrow.up.right', fallback: 'arrow-top-right' },
+  phone: { sf: 'phone', fallback: 'phone-outline' },
 } as const satisfies Record<string, IconSpec>;

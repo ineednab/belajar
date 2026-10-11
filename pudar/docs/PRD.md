@@ -307,8 +307,10 @@ The function also returns `daysLeft` (ceil of remaining time in days, minimum 0)
 - How fading works (retention explainer).
 - Privacy: what is stored, that nothing leaves the device, encryption, backup behavior (§9.3).
 - **If you're struggling**: short supportive copy, a link to an international helpline directory (e.g. findahelpline.com), and a line saying Pudar is not a substitute for professional help or emergency services.
-- Delete all data: two-step confirmation (dialog, then typing "DELETE" or holding a button). Closes the database, deletes the database file, deletes the encryption key, and resets to first launch.
+- Delete all data: two-step confirmation (dialog, then typing "HAPUS"). Closes the database, deletes the database file, then deletes the encryption key, and resets to first launch (the retention notice shows again).
 - App version.
+
+Built in step 10 (v1.3): Settings has three groups. "Pudar-mu" lists every Pudar (open ones first, closed ones with a "Selesai" label) and opens Edit Pudar, plus "Pudar baru". "Tentang Pudar" has "Cara tulisan memudar", "Privasi" and "Kalau kamu sedang berat" as reading pages. "Data" has "Hapus semua data". The version is shown at the bottom. The support page links to findahelpline.com and gives 112 (Indonesia's emergency number) with a call button; its copy still needs the review in Q5. The app lock toggle comes with step 12.
 
 ### P1 — Onboarding
 1. "A journal for what you can't send."
@@ -579,7 +581,7 @@ Work runs in this order; each step is reviewed against nabila's mockups before t
 | 7 | Lock, Unlock and Let Go (Epic 5) | Done in PR #3 |
 | 8 | Lainnya quick logs (D22) | Done in PR #3 with the proposed list; final list still Q8 |
 | 9 | Closing and reopening a Pudar (D23) | Done in PR #3 with the Q7 default; migration 5 |
-| 10 | Settings and privacy, Delete all data (Epic 7) | |
+| 10 | Settings and privacy, Delete all data (Epic 7) | Done in PR #3; support copy still Q5 |
 | 11 | Dark mode | All screens exist, so every color is known |
 | 12 | Onboarding, app lock, hardening (Epic 8) | |
 | 13 | App Store release (Epic 9) | |
@@ -643,6 +645,8 @@ Done when:
 ### Epic 7 — Settings and privacy
 - Every Settings item in §6, including Delete All Data (file + key).
 - Done when: after Delete All Data the app is in first-launch state and the old database file and key no longer exist.
+  - [x] Delete order (close, file, key) and the fresh first launch afterwards are tested with fake storage; checked in the web preview.
+  - [ ] Checked on an iPhone build *(needs a Mac)*.
 
 ### Epic 8 — Hardening and onboarding
 - Onboarding (P1), app lock (P1), app switcher privacy screen, accessibility pass (VoiceOver, Dynamic Type, contrast), layout check on the smallest and largest supported iPhones, empty states, error states.

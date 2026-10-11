@@ -12,6 +12,7 @@ export type DatabaseOpenDeps = {
   readKey(): Promise<string | null>;
   generateKey(): Promise<string>;
   storeKey(key: string): Promise<void>;
+  deleteKey(): Promise<void>;
   openDatabase(): Promise<Db>;
   deleteDatabase(): Promise<void>;
   /** Refuse to open without SQLCipher. True in production builds. */
@@ -77,4 +78,21 @@ export async function openEncryptedDatabase(deps: DatabaseOpenDeps): Promise<Ope
 async function unlock(db: Db, key: string): Promise<void> {
   await applyKey(db, key);
   await verifyReadable(db);
+}
+
+/**
+ * "Hapus semua data" (PRD §6 Settings, Epic 7): close the connection, delete the database file,
+ * then delete the key. The next open starts from first launch with a new key.
+ *
+ * The file goes first. If deleting it fails, the key is still there and nothing is lost by
+ * trying again. If deleting the key fails afterwards, the data is already gone and the next
+ * launch simply reuses the old key for an empty database.
+ */
+export async function deleteAllData(
+  db: Db,
+  deps: Pick<DatabaseOpenDeps, 'deleteDatabase' | 'deleteKey'>,
+): Promise<void> {
+  await db.closeAsync();
+  await deps.deleteDatabase();
+  await deps.deleteKey();
 }
