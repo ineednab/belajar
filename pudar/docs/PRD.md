@@ -144,7 +144,7 @@ Wording rule: **"Pudar"** = a profile/space ("+ Pudar baru", "Pudar untuk V"). *
 
 ### v1.3 additions
 
-**Several entries per day.** Today lists the day's saved entries above the editor, newest first, each with its time ("21.40"). Saving adds a new entry and clears the editor. Tapping one of today's entries opens it for editing while it is still today. A short line under the editor explains this: "Kamu bisa menulis lebih dari sekali hari ini." The week strip dot means "at least one entry"; it is hollow only when every entry that day has faded. Memory shows one card per entry.
+**Several entries per day.** Today lists the day's saved entries below the editor and save button, under "Tulisan hari ini · N", newest first, each with its time ("21.40"). Saving adds a new entry and clears the editor. Tapping one of today's entries opens it for editing while it is still today. A short line under the editor explains this: "Kamu bisa menulis lebih dari sekali hari ini." The week strip dot means "at least one entry"; it is hollow only when every entry that day has faded. Memory shows one card per entry.
 
 **"Hari ini" button.** When a past day is selected, or the week strip shows an earlier week, a small "Hari ini" pill appears next to the week strip and jumps back to today.
 
@@ -371,7 +371,7 @@ type JournalEntry = {
 
 `retentionExpiresAt` is stored, not recomputed, so a future change to the retention period never retroactively changes existing entries. `fadedAt` records when the purge actually ran (which can be later than `retentionExpiresAt` if the app was not opened). It is used for debugging and the "faded" label, never for computing status.
 
-### SQLite schema (migration 1)
+### SQLite schema (after migration 2)
 
 ```sql
 CREATE TABLE profiles (
@@ -403,11 +403,11 @@ CREATE TABLE journal_entries (
   updated_at            INTEGER NOT NULL,
   locked                INTEGER NOT NULL DEFAULT 0 CHECK (locked IN (0, 1)),
   retention_expires_at  INTEGER NOT NULL,
-  faded_at              INTEGER,
-  UNIQUE (profile_id, date)
+  faded_at              INTEGER
 );
+-- Migration 1 had UNIQUE (profile_id, date). Migration 2 rebuilds the table without it (D5, v1.3).
 
-CREATE INDEX idx_entries_profile_date ON journal_entries (profile_id, date DESC);
+CREATE INDEX idx_entries_profile_date ON journal_entries (profile_id, date DESC, created_at DESC);
 CREATE INDEX idx_entries_pending_purge ON journal_entries (retention_expires_at)
   WHERE content IS NOT NULL;
 
@@ -551,8 +551,8 @@ Work runs in this order; each step is reviewed against nabila's mockups before t
 | # | Step | Why here |
 |---|---|---|
 | 1 | Today screen restyle and build (Epic 4, first pass) | Done in PR #3 |
-| 2 | Bahasa Indonesia for all existing copy (D20) | Every later screen adds more text to translate |
-| 3 | Several entries per day: migration 2, repository, Today list (D5) | Memory and Let Go are built on top of this model |
+| 2 | Bahasa Indonesia for all existing copy (D20) | Done in PR #3 |
+| 3 | Several entries per day: migration 2, repository, Today list (D5) | Done in PR #3 |
 | 4 | Automatic drafts (D21) and the "Hari ini" button | Small, and protects users' words right away |
 | 5 | Fading engine and purge (Epic 3) | Memory needs real statuses |
 | 6 | Memory timeline and entry detail (Epic 6) | Next mockup screens |

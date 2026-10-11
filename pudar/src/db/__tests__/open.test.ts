@@ -1,4 +1,4 @@
-import { getSchemaVersion } from '../migrations';
+import { getSchemaVersion, SCHEMA_VERSION } from '../migrations';
 import { openEncryptedDatabase, type DatabaseOpenDeps } from '../open';
 import type { Db } from '../types';
 import { createTestDb, type TestDb } from './test-db';
@@ -86,7 +86,7 @@ describe('openEncryptedDatabase', () => {
     expect(env.events).toEqual(['storeKey', 'open']);
     expect(env.getStoredKey()).toBe(NEW_KEY);
     expect(result).toMatchObject({ encrypted: true, resetUnreadable: false });
-    expect(await getSchemaVersion(result.db)).toBe(1);
+    expect(await getSchemaVersion(result.db)).toBe(SCHEMA_VERSION);
   });
 
   it('normal launch: opens with the existing key', async () => {
@@ -104,7 +104,7 @@ describe('openEncryptedDatabase', () => {
     expect(env.events).toEqual(['storeKey', 'open', 'delete', 'open']);
     expect(env.opened[0].closed).toBe(true);
     expect(result.resetUnreadable).toBe(true);
-    expect(await getSchemaVersion(result.db)).toBe(1);
+    expect(await getSchemaVersion(result.db)).toBe(SCHEMA_VERSION);
   });
 
   it('NEVER deletes data when an existing key does not match', async () => {

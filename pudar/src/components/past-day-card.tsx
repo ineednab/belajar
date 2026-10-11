@@ -8,17 +8,18 @@ import { ICONS } from '@/theme/icons';
 import { colors, radii, spacing } from '@/theme/tokens';
 
 import { AppText } from './app-text';
+import { EntryList } from './entry-list';
 import { Icon } from './icon';
 import { QuickLogIcons } from './quick-logs';
 
 /** A past day on Today: read-only, and locked or faded text is never shown (PRD §6, D8). */
 export function PastDayCard({
   date,
-  entry,
+  entries,
   quickLogs,
 }: {
   date: LocalDate;
-  entry: JournalEntry | null;
+  entries: JournalEntry[];
   quickLogs: QuickLogs;
 }) {
   const title = localDateToDate(date).toLocaleDateString(LOCALE, {
@@ -31,22 +32,12 @@ export function PastDayCard({
     <View style={styles.card}>
       <AppText variant="label">{title}</AppText>
       <QuickLogIcons value={quickLogs} />
-      {entry === null ? (
+      {entries.length === 0 ? (
         <AppText variant="caption" style={styles.state}>
           Tidak ada tulisan hari itu.
         </AppText>
-      ) : entry.content === null ? (
-        <AppText variant="caption" style={styles.state}>
-          Tulisan ini sudah memudar.
-        </AppText>
-      ) : entry.locked ? (
-        <AppText variant="caption" style={styles.state}>
-          Tulisan ini dikunci. Kata-katamu disembunyikan, sementara waktu terus berjalan.
-        </AppText>
       ) : (
-        <AppText variant="body" style={styles.content}>
-          {entry.content}
-        </AppText>
+        <EntryList entries={entries} />
       )}
       <View style={styles.footer}>
         <Icon icon={ICONS.lock} size={12} color={colors.mutedInk} />
@@ -68,10 +59,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm + 4,
   },
   state: {
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  content: {
     fontSize: 15,
     lineHeight: 22,
   },

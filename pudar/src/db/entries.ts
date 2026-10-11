@@ -51,21 +51,31 @@ export function isFaded(entry: JournalEntry): boolean {
   return entry.content === null;
 }
 
-export async function getEntryForDate(
+export async function getEntry(db: Db, id: string, now: number): Promise<JournalEntry | null> {
+  const row = await db.getFirstAsync<EntryRow>(`SELECT ${COLUMNS} FROM journal_entries WHERE id = ?`, id);
+  return row ? toEntry(row, now) : null;
+}
+
+/** All of a day's entries, newest first. A day can hold any number (PRD D5). */
+export async function listEntriesForDate(
   db: Db,
   profileId: string,
   date: LocalDate,
   now: number,
-): Promise<JournalEntry | null> {
-  const row = await db.getFirstAsync<EntryRow>(
-    `SELECT ${COLUMNS} FROM journal_entries WHERE profile_id = ? AND date = ?`,
+): Promise<JournalEntry[]> {
+  const rows = await db.getAllAsync<EntryRow>(
+    `SELECT ${COLUMNS} FROM journal_entries WHERE profile_id = ? AND date = ?
+     ORDER BY created_at DESC, id DESC`,
     profileId,
     date,
   );
-  return row ? toEntry(row, now) : null;
+  return rows.map((row) => toEntry(row, now));
 }
 
-/** Which days in `[from, to]` have an entry, and whether it has faded. Never includes text. */
+/**
+ * Which days in `[from, to]` have at least one entry. A day counts as faded only when every
+ * entry on it has faded. Never includes text.
+ */
 export async function listEntryMarks(
   db: Db,
   profileId: string,
@@ -73,16 +83,16 @@ export async function listEntryMarks(
   to: LocalDate,
   now: number,
 ): Promise<Map<LocalDate, { faded: boolean }>> {
-  const rows = await db.getAllAsync<{ date: string; has_content: number; retention_expires_at: number }>(
-    `SELECT date, content IS NOT NULL AS has_content, retention_expires_at
-     FROM journal_entries WHERE profile_id = ? AND date BETWEEN ? AND ?`,
+  const rows = await db.getAllAsync<{ date: string; live: number }>(
+    `SELECT date, MAX(content IS NOT NULL AND retention_expires_at > ?) AS live
+     FROM journal_entries WHERE profile_id = ? AND date BETWEEN ? AND ?
+     GROUP BY date`,
+    now,
     profileId,
     from,
     to,
   );
-  return new Map(
-    rows.map((row) => [row.date, { faded: row.has_content === 0 || now >= row.retention_expires_at }]),
-  );
+  return new Map(rows.map((row) => [row.date, { faded: row.live === 0 }]));
 }
 
 export class EntryValidationError extends Error {
@@ -92,36 +102,24 @@ export class EntryValidationError extends Error {
   }
 }
 
-/**
- * Creates the day's entry, or updates its text. Editing never moves `createdAt` or the
- * retention deadline (PRD D7). Callers decide writability; this only enforces the content rules.
- */
-export async function saveEntry(
-  db: Db,
-  profileId: string,
-  date: LocalDate,
-  content: string,
-  context: { id: string; now: number },
-): Promise<JournalEntry> {
+function validateContent(content: string) {
   if (content.trim().length === 0) {
     throw new EntryValidationError('Tulisan tidak boleh kosong.');
   }
   if (content.length > MAX_ENTRY_LENGTH) {
     throw new EntryValidationError(`Maksimal ${MAX_ENTRY_LENGTH} karakter.`);
   }
-  const existing = await getEntryForDate(db, profileId, date, context.now);
-  if (existing) {
-    if (isFaded(existing)) {
-      throw new EntryValidationError('Tulisan ini sudah memudar.');
-    }
-    await db.runAsync(
-      'UPDATE journal_entries SET content = ?, updated_at = ? WHERE id = ?',
-      content,
-      context.now,
-      existing.id,
-    );
-    return { ...existing, content, updatedAt: context.now };
-  }
+}
+
+/** Adds a new entry to the day, with its own 30-day retention deadline (PRD D5). */
+export async function createEntry(
+  db: Db,
+  profileId: string,
+  date: LocalDate,
+  content: string,
+  context: { id: string; now: number },
+): Promise<JournalEntry> {
+  validateContent(content);
   const entry: JournalEntry = {
     id: context.id,
     profileId,
@@ -144,4 +142,26 @@ export async function saveEntry(
     entry.retentionExpiresAt,
   );
   return entry;
+}
+
+/**
+ * Replaces an entry's text. Editing never moves `createdAt` or the retention deadline (PRD D7).
+ * Callers decide writability; this only enforces the content rules.
+ */
+export async function updateEntry(
+  db: Db,
+  id: string,
+  content: string,
+  now: number,
+): Promise<JournalEntry> {
+  validateContent(content);
+  const existing = await getEntry(db, id, now);
+  if (!existing) {
+    throw new EntryValidationError('Tulisan ini sudah tidak ada.');
+  }
+  if (isFaded(existing)) {
+    throw new EntryValidationError('Tulisan ini sudah memudar.');
+  }
+  await db.runAsync('UPDATE journal_entries SET content = ?, updated_at = ? WHERE id = ?', content, now, id);
+  return { ...existing, content, updatedAt: now };
 }

@@ -40,10 +40,10 @@ async function count(db: TestDb, table: string): Promise<number> {
 }
 
 describe('migrate', () => {
-  it('creates the v1 schema on an empty database', async () => {
+  it('creates the current schema on an empty database', async () => {
     const db = await createTestDb();
     expect(await migrate(db)).toEqual({ from: 0, to: SCHEMA_VERSION });
-    expect(await getSchemaVersion(db)).toBe(1);
+    expect(await getSchemaVersion(db)).toBe(SCHEMA_VERSION);
 
     const tables = await db.getAllAsync<{ name: string }>(
       "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name",
@@ -54,6 +54,30 @@ describe('migrate', () => {
       'profiles',
       'settings',
     ]);
+  });
+
+  it('keeps v1 entries when upgrading to v2', async () => {
+    const db = await createTestDb();
+    await configureConnection(db);
+    await db.execAsync(MIGRATIONS[0]);
+    await db.execAsync('PRAGMA user_version = 1');
+    await insertProfile(db);
+    await db.runAsync(
+      `INSERT INTO journal_entries (id, profile_id, date, content, created_at, updated_at, locked, retention_expires_at)
+       VALUES ('e1', 'p1', '2026-10-11', 'kept', ?, ?, 1, ?)`,
+      NOW,
+      NOW,
+      NOW + 1,
+    );
+
+    expect(await migrate(db)).toEqual({ from: 1, to: SCHEMA_VERSION });
+    const row = await db.getFirstAsync<{ content: string; locked: number }>(
+      "SELECT content, locked FROM journal_entries WHERE id = 'e1'",
+    );
+    expect(row).toEqual({ content: 'kept', locked: 1 });
+    await insertEntry(db, 'e2', '2026-10-11');
+    await db.runAsync("DELETE FROM profiles WHERE id = 'p1'");
+    expect(await count(db, 'journal_entries')).toBe(0);
   });
 
   it('is a no-op on an up-to-date database', async () => {
@@ -75,7 +99,7 @@ describe('migrate', () => {
     (MIGRATIONS as string[]).push('CREATE TABLE half_done (id TEXT); SELECT * FROM missing_table;');
     try {
       await migrate(db).catch(() => undefined);
-      expect(await getSchemaVersion(db)).toBe(1);
+      expect(await getSchemaVersion(db)).toBe(SCHEMA_VERSION);
       const halfDone = await db.getFirstAsync(
         "SELECT name FROM sqlite_master WHERE name = 'half_done'",
       );
@@ -116,10 +140,10 @@ describe('schema constraints', () => {
     ).rejects.toThrow(/FOREIGN KEY/);
   });
 
-  it('allows one journal entry per profile per date', async () => {
+  it('allows several journal entries per profile per date (v2)', async () => {
     await insertEntry(db, 'e1', '2026-10-11');
-    await expect(insertEntry(db, 'e2', '2026-10-11')).rejects.toThrow(/UNIQUE/);
-    await insertEntry(db, 'e3', '2026-10-12');
+    await insertEntry(db, 'e2', '2026-10-11');
+    expect(await count(db, 'journal_entries')).toBe(2);
   });
 
   it('allows one day record per profile per date', async () => {

@@ -4,7 +4,7 @@ import {
   isNotADatabaseError,
   readDiagnostics,
 } from '../connection';
-import { migrate } from '../migrations';
+import { migrate, SCHEMA_VERSION } from '../migrations';
 import { createTestDb } from './test-db';
 
 const KEY = 'a'.repeat(64);
@@ -50,7 +50,7 @@ describe('configureConnection', () => {
       cipherVersion: null, // sql.js has no SQLCipher
       foreignKeys: true,
       secureDelete: true,
-      schemaVersion: 1,
+      schemaVersion: SCHEMA_VERSION,
     });
   });
 });

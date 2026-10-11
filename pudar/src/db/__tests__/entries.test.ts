@@ -1,5 +1,12 @@
 import { configureConnection } from '../connection';
-import { EntryValidationError, getEntryForDate, listEntryMarks, saveEntry } from '../entries';
+import {
+  createEntry,
+  EntryValidationError,
+  getEntry,
+  listEntriesForDate,
+  listEntryMarks,
+  updateEntry,
+} from '../entries';
 import { migrate } from '../migrations';
 import { createProfile } from '../profiles';
 import { RETENTION_MS } from '@/lib/fading';
@@ -19,19 +26,29 @@ describe('journal entries repository', () => {
     await createProfile(db, profile, { id: 'p1', now: T0, today: TODAY });
   });
 
-  it('creates the entry with a 30-day retention deadline', async () => {
-    const entry = await saveEntry(db, 'p1', TODAY, 'Hello', { id: 'e1', now: T0 });
+  it('creates an entry with a 30-day retention deadline', async () => {
+    const entry = await createEntry(db, 'p1', TODAY, 'Hello', { id: 'e1', now: T0 });
     expect(entry).toMatchObject({ id: 'e1', content: 'Hello', createdAt: T0, retentionExpiresAt: T0 + RETENTION_MS });
-    expect(await getEntryForDate(db, 'p1', TODAY, T0)).toEqual(entry);
+    expect(await getEntry(db, 'e1', T0)).toEqual(entry);
+  });
+
+  it('keeps several entries on one day, newest first, each with its own deadline', async () => {
+    await createEntry(db, 'p1', TODAY, 'Morning', { id: 'e1', now: T0 });
+    await createEntry(db, 'p1', TODAY, 'Night', { id: 'e2', now: T0 + 60_000 });
+    await createEntry(db, 'p1', '2026-10-10', 'Yesterday', { id: 'e3', now: T0 });
+
+    const entries = await listEntriesForDate(db, 'p1', TODAY, T0 + 60_000);
+    expect(entries.map((e) => [e.id, e.content, e.retentionExpiresAt])).toEqual([
+      ['e2', 'Night', T0 + 60_000 + RETENTION_MS],
+      ['e1', 'Morning', T0 + RETENTION_MS],
+    ]);
   });
 
   it('edits text without moving createdAt or the deadline', async () => {
-    await saveEntry(db, 'p1', TODAY, 'First', { id: 'e1', now: T0 });
-    await saveEntry(db, 'p1', TODAY, 'Second', { id: 'unused', now: T0 + 5000 });
+    await createEntry(db, 'p1', TODAY, 'First', { id: 'e1', now: T0 });
+    await updateEntry(db, 'e1', 'Second', T0 + 5000);
 
-    const entry = await getEntryForDate(db, 'p1', TODAY, T0 + 5000);
-    expect(entry).toMatchObject({
-      id: 'e1',
+    expect(await getEntry(db, 'e1', T0 + 5000)).toMatchObject({
       content: 'Second',
       createdAt: T0,
       updatedAt: T0 + 5000,
@@ -40,33 +57,36 @@ describe('journal entries repository', () => {
   });
 
   it('rejects empty and over-long text', async () => {
-    await expect(saveEntry(db, 'p1', TODAY, '   ', { id: 'e1', now: T0 })).rejects.toBeInstanceOf(
+    await expect(createEntry(db, 'p1', TODAY, '   ', { id: 'e1', now: T0 })).rejects.toBeInstanceOf(
       EntryValidationError,
     );
     await expect(
-      saveEntry(db, 'p1', TODAY, 'x'.repeat(2001), { id: 'e1', now: T0 }),
+      createEntry(db, 'p1', TODAY, 'x'.repeat(2001), { id: 'e1', now: T0 }),
     ).rejects.toBeInstanceOf(EntryValidationError);
-    expect(await getEntryForDate(db, 'p1', TODAY, T0)).toBeNull();
+    expect(await listEntriesForDate(db, 'p1', TODAY, T0)).toEqual([]);
+
+    await createEntry(db, 'p1', TODAY, 'Ok', { id: 'e1', now: T0 });
+    await expect(updateEntry(db, 'e1', '', T0)).rejects.toBeInstanceOf(EntryValidationError);
   });
 
   it('never returns text once the deadline has passed, even before the purge', async () => {
-    await saveEntry(db, 'p1', TODAY, 'Secret', { id: 'e1', now: T0 });
+    await createEntry(db, 'p1', TODAY, 'Secret', { id: 'e1', now: T0 });
     const expiry = T0 + RETENTION_MS;
 
-    expect((await getEntryForDate(db, 'p1', TODAY, expiry - 1))?.content).toBe('Secret');
-    expect((await getEntryForDate(db, 'p1', TODAY, expiry))?.content).toBeNull();
-    await expect(saveEntry(db, 'p1', TODAY, 'More', { id: 'x', now: expiry })).rejects.toBeInstanceOf(
-      EntryValidationError,
-    );
+    expect((await getEntry(db, 'e1', expiry - 1))?.content).toBe('Secret');
+    expect((await getEntry(db, 'e1', expiry))?.content).toBeNull();
+    expect((await listEntriesForDate(db, 'p1', TODAY, expiry))[0].content).toBeNull();
+    await expect(updateEntry(db, 'e1', 'More', expiry)).rejects.toBeInstanceOf(EntryValidationError);
   });
 
-  it('marks days with entries and whether they faded', async () => {
-    await saveEntry(db, 'p1', '2026-10-01', 'Old', { id: 'e1', now: T0 });
-    await saveEntry(db, 'p1', TODAY, 'New', { id: 'e2', now: T0 + RETENTION_MS });
+  it('marks a day faded only when every entry on it has faded', async () => {
+    await createEntry(db, 'p1', '2026-10-01', 'Old', { id: 'e1', now: T0 });
+    await createEntry(db, 'p1', '2026-10-05', 'Old too', { id: 'e2', now: T0 });
+    await createEntry(db, 'p1', '2026-10-05', 'Newer', { id: 'e3', now: T0 + RETENTION_MS });
 
     const marks = await listEntryMarks(db, 'p1', '2026-09-28', TODAY, T0 + RETENTION_MS);
     expect(marks.get('2026-10-01')).toEqual({ faded: true });
-    expect(marks.get(TODAY)).toEqual({ faded: false });
+    expect(marks.get('2026-10-05')).toEqual({ faded: false });
     expect(marks.has('2026-10-02')).toBe(false);
   });
 });

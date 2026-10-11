@@ -50,6 +50,33 @@ export const MIGRATIONS: readonly string[] = [
     value  TEXT NOT NULL
   );
   `,
+
+  // v1 → v2: several entries per day (PRD D5, v1.3). SQLite can't drop a UNIQUE constraint,
+  // so the table is rebuilt. Nothing references journal_entries, so the drop is safe.
+  `
+  CREATE TABLE journal_entries_v2 (
+    id                    TEXT PRIMARY KEY NOT NULL,
+    profile_id            TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    date                  TEXT NOT NULL,
+    content               TEXT CHECK (content IS NULL OR length(content) BETWEEN 1 AND 2000),
+    created_at            INTEGER NOT NULL,
+    updated_at            INTEGER NOT NULL,
+    locked                INTEGER NOT NULL DEFAULT 0 CHECK (locked IN (0, 1)),
+    retention_expires_at  INTEGER NOT NULL,
+    faded_at              INTEGER
+  );
+
+  INSERT INTO journal_entries_v2
+    SELECT id, profile_id, date, content, created_at, updated_at, locked, retention_expires_at, faded_at
+    FROM journal_entries;
+
+  DROP TABLE journal_entries;
+  ALTER TABLE journal_entries_v2 RENAME TO journal_entries;
+
+  CREATE INDEX idx_entries_profile_date ON journal_entries (profile_id, date DESC, created_at DESC);
+  CREATE INDEX idx_entries_pending_purge ON journal_entries (retention_expires_at)
+    WHERE content IS NOT NULL;
+  `,
 ];
 
 export const SCHEMA_VERSION = MIGRATIONS.length;
