@@ -1,6 +1,6 @@
 # Pudar — Product Requirements Document
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Source of truth for MVP development
 **Platform:** iOS first (Expo + React Native + TypeScript)
 **Category:** Personal journaling / emotional wellness
@@ -11,6 +11,21 @@
 ---
 
 ## 0. Changelog
+
+### v1.3 — decisions from nabila's review (2026-10-11)
+
+| Area | v1.2 | v1.3 |
+|---|---|---|
+| Language (§8) | English | **Bahasa Indonesia only.** All UI copy, dates and numbers in `id-ID` |
+| Entries per day (D5) | At most one per profile per date | **Any number per day.** Each entry has its own 30-day retention |
+| Drafts (§6 Editor) | Not persisted across app termination | **Saved automatically** and restored after the app closes (D21) |
+| Quick logs (§6) | Three toggles | Three main toggles plus **"Lainnya"** with up to six more, including "Ingin chat dia" (D22) |
+| Closing a Pudar | — | **"Aku sudah selesai dengan orang ini"** turns a Pudar into read-only history; reopening is possible and counted (D23) |
+| Dark mode (§8) | Light only | **Light and dark**, following the system setting |
+| Today | — | A "Hari ini" button returns to today from any past day or week |
+| Visual reference | — | nabila's mockups (`/mockup/referensi-desain-nabila-v1.png` in the project files); serif headings use Fraunces Regular |
+| Order of work (§10) | Epics 1 → 9 | Roadmap in §10.0 |
+
 
 ### v1.2 — decisions made at the start of Epic 1
 
@@ -81,7 +96,6 @@ People who recently ended a relationship, are keeping no contact, still think ab
 - Android, cloud sync, accounts, export.
 - Streaks, scores, badges, recovery percentages.
 - Push or local notifications of any kind.
-- Multiple journal entries per day.
 - Writing or backfilling entries for past dates.
 - Any claim to diagnose or treat mental health conditions.
 
@@ -95,7 +109,7 @@ People who recently ended a relationship, are keeping no contact, still think ab
 | D2 | Calendar dates | Local `YYYY-MM-DD` strings, captured at write time and never re-derived |
 | D3 | Moments | `createdAt`, `updatedAt`, `retentionExpiresAt`, `fadedAt` are epoch milliseconds |
 | D4 | Writability | Only today is writable. Past days are read-only. Future days are visible but disabled |
-| D5 | Entries per day | At most one `JournalEntry` per profile per date (unique constraint) |
+| D5 | Entries per day | Any number of `JournalEntry` rows per profile per date (v1.3). Each has its own `createdAt` and 30-day retention |
 | D6 | Retention | 30 days from first save. At expiry, `content` becomes `null`; the record, date, lock flag and the day's quick logs remain |
 | D7 | Editing | Editing today's entry does not reset or extend retention |
 | D8 | Lock | Hides text everywhere in the UI. Fading continues. Unlocking does not restore anything |
@@ -110,6 +124,10 @@ People who recently ended a relationship, are keeping no contact, still think ab
 | D16 | Recovery | "Start again from today" resets the no-contact start date with non-judgmental copy. No history of previous start dates is kept |
 | D17 | Support | Settings links to support resources |
 | D18 | Export | Not in MVP. The retention policy is shown and acknowledged before the first entry |
+| D20 | Language | Bahasa Indonesia only for MVP. No language switch |
+| D21 | Drafts | The editor's text is saved automatically (debounced, about 1 s) per profile and restored on return, including after the app is closed. A draft is not an entry: it doesn't fade, isn't listed, and is removed when saved or cleared. Drafts untouched for 30 days are deleted by the purge |
+| D22 | More quick logs | Up to six extra per-day toggles behind "Lainnya", stored like the main three |
+| D23 | Closing a Pudar | A closed Pudar is read-only history: no new entries or quick logs, counter frozen at its last day. Existing text still fades on schedule. Reopening asks for confirmation and increments `reopenCount` |
 
 ---
 
@@ -122,7 +140,19 @@ Three tabs:
 
 Each profile has its own name, optional icon and accent color, no-contact start date, day records, and journal entries. Switching profiles changes every tab to that profile's data.
 
-Wording rule: **"Pudar"** = a profile/space ("+ New Pudar", "Pudar for V"). **"Entry"** = a journal entry inside a Pudar. The two are never used interchangeably in UI copy.
+Wording rule: **"Pudar"** = a profile/space ("+ Pudar baru", "Pudar untuk V"). **"Tulisan"** = a journal entry inside a Pudar. The two are never used interchangeably in UI copy. English strings elsewhere in this document describe meaning; the shipped copy is Indonesian (D20), and final wording is reviewed by nabila.
+
+### v1.3 additions
+
+**Several entries per day.** Today lists the day's saved entries above the editor, newest first, each with its time ("21.40"). Saving adds a new entry and clears the editor. Tapping one of today's entries opens it for editing while it is still today. A short line under the editor explains this: "Kamu bisa menulis lebih dari sekali hari ini." The week strip dot means "at least one entry"; it is hollow only when every entry that day has faded. Memory shows one card per entry.
+
+**"Hari ini" button.** When a past day is selected, or the week strip shows an earlier week, a small "Hari ini" pill appears next to the week strip and jumps back to today.
+
+**Lainnya (more quick logs).** A "Lainnya" button sits under the three main quick logs and opens a sheet of extra toggles. Proposed set, to be confirmed by nabila: Ingin chat dia, Lihat media sosialnya, Kangen, Marah, Merasa lega, Tidur nyenyak. Toggles that are on also appear as small chips under the main row. "Ingin chat dia" also focuses the editor with the placeholder "Tulis di sini saja, bukan ke dia." Same rules as the main three: saved on tap, no counts or scores.
+
+**Closing a Pudar.** At the very bottom of Today, a quiet text button "Aku sudah selesai dengan orang ini" opens a gentle confirmation. A closed Pudar shows a "Selesai" label, its frozen counter, and its history read-only on Today and Memory. "Buka lagi" (on Edit Pudar) asks for confirmation and increments `reopenCount`. Whether and how `reopenCount` is shown is open (Q7). Closed Pudars stay in the switcher under "Sudah selesai" and can still be deleted.
+
+**Dark mode.** Every color token gets a dark value; the contrast test covers both sets. The app follows the system appearance.
 
 ---
 
@@ -191,7 +221,7 @@ Three circular toggles in one row:
 - First save creates the entry: `createdAt = now`, `retentionExpiresAt = createdAt + 30 days`. Later saves update `content` and `updatedAt` only.
 - Clearing all text does not delete an existing entry; deletion only happens through Let Go.
 - **Writability is checked when the editor opens, not on save.** If the local date changes while the editor is open, the draft stays bound to the date it was opened on and can still be saved. Once the editor closes, that date is read-only.
-- Unsaved text survives tab switches. Switching profiles with unsaved text prompts "Save / Discard / Cancel". Drafts are not persisted across app termination.
+- Unsaved text is saved automatically as a draft per profile and restored on return, including after the app is closed (D21). Switching profiles keeps each Pudar's draft, so no prompt is needed.
 - Save confirmation: a brief, calm toast ("Saved").
 - **Gate:** the first time the user tries to write, the retention notice (§6 P0 — Retention notice) must be acknowledged before the editor accepts input.
 
@@ -434,7 +464,7 @@ Migrations are versioned with `PRAGMA user_version`. Each migration runs inside 
 - Status is always communicated by text and icon, never by opacity alone.
 - Faded cards never drop below 40% opacity. Text on cards must meet WCAG AA contrast at full opacity; the label carries meaning at reduced opacity.
 - Support Dynamic Type and VoiceOver on every screen. Every interactive element has an accessibility label.
-- Light mode only for MVP (dark mode is a later consideration).
+- Light and dark mode, following the system setting (v1.3).
 
 ---
 
@@ -514,7 +544,27 @@ Rules: `src/lib` contains pure functions with no React Native imports. Database 
 
 ## 10. Epics and acceptance criteria
 
-Order: **1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9**.
+### 10.0 Roadmap (v1.3)
+
+Work runs in this order; each step is reviewed against nabila's mockups before the next starts. Epics below keep their acceptance criteria.
+
+| # | Step | Why here |
+|---|---|---|
+| 1 | Today screen restyle and build (Epic 4, first pass) | Done in PR #3 |
+| 2 | Bahasa Indonesia for all existing copy (D20) | Every later screen adds more text to translate |
+| 3 | Several entries per day: migration 2, repository, Today list (D5) | Memory and Let Go are built on top of this model |
+| 4 | Automatic drafts (D21) and the "Hari ini" button | Small, and protects users' words right away |
+| 5 | Fading engine and purge (Epic 3) | Memory needs real statuses |
+| 6 | Memory timeline and entry detail (Epic 6) | Next mockup screens |
+| 7 | Lock, Unlock and Let Go (Epic 5) | Lives on entry detail |
+| 8 | Lainnya quick logs (D22) | Needs nabila's final list and a mockup |
+| 9 | Closing and reopening a Pudar (D23) | Needs a mockup and Q7 |
+| 10 | Settings and privacy, Delete all data (Epic 7) | |
+| 11 | Dark mode | All screens exist, so every color is known |
+| 12 | Onboarding, app lock, hardening (Epic 8) | |
+| 13 | App Store release (Epic 9) | |
+
+Original epic order, for reference: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9.
 
 ### Epic 1 — Foundation
 Scope:
@@ -590,7 +640,7 @@ Done when:
 - [ ] Multiple profiles with fully independent data and counters.
 - [ ] Week strip: correct dates, dots, read-only past, disabled future.
 - [ ] Quick logs toggle, save immediately, and persist; all-off removes the row.
-- [ ] Only today is writable; one entry per profile per day; the 2,000-character limit is enforced.
+- [ ] Only today is writable; several entries per day work (v1.3); the 2,000-character limit is enforced.
 - [ ] Retention notice acknowledged before the first entry.
 - [ ] Entries persist across restarts.
 - [ ] Fading statuses and opacity are correct after the app has been closed for days.
@@ -624,6 +674,8 @@ Do not optimize for streak length, frequency of thinking about someone, or daily
 | Q3 | Final app name "Pudar" — App Store availability | Check before Epic 9 | Epic 9 |
 | Q5 | Support resource link and copy reviewed by someone with mental-health background | Yes | Epic 7 |
 | Q6 | Button style: deeper `primaryInk` fill with white text (current), or `primary` fill with large bold dark text | `primaryInk` | Epic 4 |
+| Q7 | Show how many times a closed Pudar was reopened? A visible count can feel like a score, which §3 avoids | Store it; show only on the closed Pudar as neutral text ("Dibuka lagi 2 kali"), never as a trend | Step 9 |
+| Q8 | Final list of "Lainnya" quick logs (up to six) | The six proposed in §5 v1.3 additions | Step 8 |
 
 ---
 
