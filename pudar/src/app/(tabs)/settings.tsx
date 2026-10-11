@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { Card } from '@/components/card';
@@ -16,10 +16,13 @@ import { isClosed } from '@/db/profiles';
 import { useDatabase } from '@/db/provider';
 import { useProfiles } from '@/profiles/provider';
 import { ICONS } from '@/theme/icons';
-import { colors, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 
 /** Settings and privacy (PRD §6, Epic 7). App lock arrives with Epic 8. */
 export default function SettingsScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { profiles } = useProfiles();
   // Open Pudars first, then the closed ones, as in the switcher.
   const sorted = [...profiles.filter((p) => !isClosed(p)), ...profiles.filter(isClosed)];
@@ -108,6 +111,7 @@ export default function SettingsScreen() {
 
 /** Used for the Epic 1 encryption check (README → "Verify encryption"). */
 function StorageDiagnostics() {
+  const styles = useStyles();
   const { db } = useDatabase();
   const [diagnostics, setDiagnostics] = useState<DbDiagnostics | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -142,7 +146,7 @@ function StorageDiagnostics() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   plus: {
     width: 36,
     height: 36,
@@ -160,4 +164,4 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: spacing.md,
   },
-});
+}));

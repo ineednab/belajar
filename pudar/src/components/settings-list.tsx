@@ -3,13 +3,15 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import type { IconSpec } from '@/theme/icons';
 import { ICONS } from '@/theme/icons';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 
 import { AppText } from './app-text';
 import { Icon } from './icon';
 
 /** A titled group of rows on the Settings tab. */
 export function SettingsSection({ title, children }: { title: string; children: ReactNode }) {
+  const styles = useStyles();
   return (
     <View style={styles.section}>
       <AppText variant="caption" style={styles.sectionTitle} accessibilityRole="header">
@@ -45,6 +47,8 @@ export function SettingsRow({
   accessibilityLabel?: string;
   onPress: () => void;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const ink = destructive ? colors.dangerInk : colors.text;
   return (
     <Pressable
@@ -62,7 +66,7 @@ export function SettingsRow({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   section: {
     gap: spacing.sm,
   },
@@ -94,4 +98,4 @@ const styles = StyleSheet.create({
   label: {
     flex: 1,
   },
-});
+}));

@@ -480,6 +480,12 @@ Migrations are versioned with `PRAGMA user_version`. Each migration runs inside 
 
 `primary` remains the color for selected states, tab tint accents and soft fills. `src/theme/__tests__/contrast.test.ts` fails the build if a pair drops below AA.
 
+### Dark mode (v1.3, roadmap step 11)
+
+The app follows the iPhone's appearance setting; there is no in-app switch. Every token has a dark value in `src/theme/tokens.ts` (`darkColors`), and the same contrast tests run on both palettes. The dark palette is a warm near-black (`background #1B1617`, `surface #252021`) with lighter inks (`text #F2E9E7`, `mutedInk #B5A9AB`, `primaryInk #EC9DAA`, `dangerInk #F28B82`). Because `primaryInk` is light at night, filled buttons use dark labels (`onPrimaryInk #2B1A1E`). Profile accent colors stay the same in both modes, and their icons and initials always use dark ink (`onAccent`).
+
+Components get colors through `createStyles` and `useColors` in `src/theme/theme.ts`, which build each stylesheet once per palette.
+
 ### Principles
 - Calm, spacious, minimal. Soft rounded surfaces, restrained shadows.
 - Serif headings in **Fraunces SemiBold**, body in **Inter** (Regular / Medium / SemiBold), bundled via `@expo-google-fonts`.
@@ -582,7 +588,7 @@ Work runs in this order; each step is reviewed against nabila's mockups before t
 | 8 | Lainnya quick logs (D22) | Done in PR #3 with the proposed list; final list still Q8 |
 | 9 | Closing and reopening a Pudar (D23) | Done in PR #3 with the Q7 default; migration 5 |
 | 10 | Settings and privacy, Delete all data (Epic 7) | Done in PR #3; support copy still Q5 |
-| 11 | Dark mode | All screens exist, so every color is known |
+| 11 | Dark mode | Done in PR #3 (§8 Dark mode) |
 | 12 | Onboarding, app lock, hardening (Epic 8) | |
 | 13 | App Store release (Epic 9) | |
 

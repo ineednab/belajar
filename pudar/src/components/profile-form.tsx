@@ -12,7 +12,8 @@ import {
   type ProfileInput,
 } from '@/lib/profile';
 import { PROFILE_COLORS, PROFILE_ICONS } from '@/theme/profile-style';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 import { fonts, typography } from '@/theme/typography';
 
 import { AppText } from './app-text';
@@ -32,6 +33,8 @@ export function ProfileForm({
   /** Extra actions under the form (edit screen: start again, delete). */
   children?: ReactNode;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const [input, setInput] = useState(initial);
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -182,6 +185,7 @@ function Field({
   error?: string;
   children: ReactNode;
 }) {
+  const styles = useStyles();
   return (
     <View style={styles.field}>
       <View style={styles.fieldHeader}>
@@ -211,6 +215,8 @@ function Choice({
   onPress: () => void;
   children?: ReactNode;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <Pressable
       accessibilityRole="button"
@@ -237,6 +243,7 @@ export function TextButton({
   onPress: () => void;
   destructive?: boolean;
 }) {
+  const styles = useStyles();
   return (
     <Pressable accessibilityRole="button" onPress={onPress} hitSlop={8} style={styles.textButton}>
       <AppText style={[styles.textButtonLabel, destructive && styles.destructive]}>{label}</AppText>
@@ -244,7 +251,7 @@ export function TextButton({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   form: {
     gap: spacing.lg,
   },
@@ -261,6 +268,7 @@ const styles = StyleSheet.create({
   },
   input: {
     ...typography.body,
+    color: colors.text,
     backgroundColor: colors.surface,
     borderRadius: radii.md,
     borderWidth: StyleSheet.hairlineWidth,
@@ -303,4 +311,4 @@ const styles = StyleSheet.create({
   error: {
     color: colors.dangerInk,
   },
-});
+}));

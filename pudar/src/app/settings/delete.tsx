@@ -1,13 +1,14 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { InfoPage, Paragraph } from '@/components/info-page';
 import { PrimaryButton } from '@/components/primary-button';
 import { SecondaryButton } from '@/components/secondary-button';
 import { useDatabase } from '@/db/provider';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles } from '@/theme/theme';
 import { fonts } from '@/theme/typography';
 
 const CONFIRM_WORD = 'HAPUS';
@@ -17,6 +18,7 @@ const CONFIRM_WORD = 'HAPUS';
  * Typing the word makes the last step deliberate.
  */
 export default function DeleteAllDataScreen() {
+  const styles = useStyles();
   const { deleteAllData } = useDatabase();
   const [typed, setTyped] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -64,7 +66,7 @@ export default function DeleteAllDataScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   field: {
     gap: spacing.sm,
   },
@@ -83,4 +85,4 @@ const styles = StyleSheet.create({
   actions: {
     gap: spacing.sm,
   },
-});
+}));

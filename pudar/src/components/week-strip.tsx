@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { PanResponder, Pressable, StyleSheet, View } from 'react-native';
+import { PanResponder, Pressable, View } from 'react-native';
 
 import { addDays, compareLocalDates, localDateToDate, weekContaining, type LocalDate } from '@/lib/date';
-import { colors, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { createStyles } from '@/theme/theme';
 import { fonts } from '@/theme/typography';
 
 import { LOCALE } from '@/lib/locale';
@@ -34,6 +35,7 @@ export function WeekStrip({
   /** Called with the first and last day whenever the visible week changes. */
   onWeekChange: (from: LocalDate, to: LocalDate) => void;
 }) {
+  const styles = useStyles();
   const [anchor, setAnchor] = useState(selected);
   const [shownSelection, setShownSelection] = useState(selected);
   if (selected !== shownSelection) {
@@ -104,7 +106,7 @@ export function WeekStrip({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -154,4 +156,4 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.primaryInk,
   },
-});
+}));

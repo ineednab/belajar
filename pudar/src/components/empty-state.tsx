@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import type { IconSpec } from '@/theme/icons';
-import { colors, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 
 import { AppText } from './app-text';
 import { Icon } from './icon';
@@ -19,6 +20,8 @@ export function EmptyState({
   body: string;
   children?: ReactNode;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <View style={styles.container}>
       <View style={styles.iconCircle} accessible={false} importantForAccessibility="no-hide-descendants">
@@ -35,7 +38,7 @@ export function EmptyState({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   container: {
     alignItems: 'center',
     gap: spacing.sm,
@@ -62,4 +65,4 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     marginTop: spacing.md,
   },
-});
+}));

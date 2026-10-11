@@ -2,7 +2,7 @@ import * as Crypto from 'expo-crypto';
 import { getCalendars } from 'expo-localization';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, AppState, Pressable, StyleSheet, View, type TextInput } from 'react-native';
+import { Alert, AppState, Pressable, View, type TextInput } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { ClosedBanner } from '@/components/closed-banner';
@@ -37,13 +37,15 @@ import { compareLocalDates, diffCalendarDays, weekStartsOnFromLocale, type Local
 import { TextButton } from '@/components/profile-form';
 import { useProfiles } from '@/profiles/provider';
 import { ICONS } from '@/theme/icons';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 import { fonts } from '@/theme/typography';
 
 const WEEK_STARTS_ON = weekStartsOnFromLocale(getCalendars()[0]?.firstWeekday);
 const DRAFT_DEBOUNCE_MS = 1000;
 
 export default function TodayScreen() {
+  const styles = useStyles();
   const { activeProfile } = useProfiles();
 
   if (!activeProfile) {
@@ -66,6 +68,8 @@ export default function TodayScreen() {
 
 /** Today screen for one profile (PRD §6 Today). */
 function Day({ profile }: { profile: Profile }) {
+  const styles = useStyles();
+  const colors = useColors();
   const { db, purgeVersion } = useDatabase();
   const today = useLocalToday();
   const [selected, setSelected] = useState(today);
@@ -402,6 +406,7 @@ function persistEntry(
 
 /** Elapsed days only: not a streak or score (PRD §6 No-contact counter). */
 function Counter({ days }: { days: number }) {
+  const styles = useStyles();
   const label = days === 0 ? 'Mulai hari ini' : `${days} hari`;
   return (
     <View style={styles.counter} accessible accessibilityLabel={`${label} tanpa kontak. Satu hari demi satu hari.`}>
@@ -420,7 +425,7 @@ function Counter({ days }: { days: number }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   firstLaunch: {
     paddingTop: spacing.xxl,
   },
@@ -504,4 +509,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing.xs,
   },
-});
+}));

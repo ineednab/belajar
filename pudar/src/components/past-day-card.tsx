@@ -5,7 +5,8 @@ import type { JournalEntry } from '@/db/entries';
 import { localDateToDate, type LocalDate } from '@/lib/date';
 import { LOCALE } from '@/lib/locale';
 import { ICONS } from '@/theme/icons';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 
 import { AppText } from './app-text';
 import { EntryList } from './entry-list';
@@ -22,6 +23,8 @@ export function PastDayCard({
   entries: JournalEntry[];
   quickLogs: QuickLogs;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const title = localDateToDate(date).toLocaleDateString(LOCALE, {
     weekday: 'long',
     month: 'long',
@@ -49,7 +52,7 @@ export function PastDayCard({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radii.md,
@@ -71,4 +74,4 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 12,
   },
-});
+}));

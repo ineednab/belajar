@@ -5,7 +5,8 @@ import { InfoPage, InfoSection, Paragraph } from '@/components/info-page';
 import { StatusPill } from '@/components/status-pill';
 import { fadeLabel } from '@/lib/fade-label';
 import { MIN_CARD_OPACITY } from '@/lib/fading';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles } from '@/theme/theme';
 
 const STAGES = [
   {
@@ -28,6 +29,7 @@ const STAGES = [
 
 /** Settings → "How fading works": the retention notice as a page (PRD §6 Retention notice). */
 export default function FadingScreen() {
+  const styles = useStyles();
   return (
     <InfoPage title="Cara tulisan memudar">
       <Paragraph>
@@ -70,7 +72,7 @@ export default function FadingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   stages: {
     backgroundColor: colors.surface,
     borderRadius: radii.lg,
@@ -90,4 +92,4 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 21,
   },
-});
+}));

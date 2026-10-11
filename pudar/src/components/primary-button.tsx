@@ -1,9 +1,10 @@
-import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, type StyleProp, type ViewStyle } from 'react-native';
 
 import type { IconSpec } from '@/theme/icons';
 
 import { fonts } from '@/theme/typography';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 
 import { AppText } from './app-text';
 import { Icon } from './icon';
@@ -24,6 +25,8 @@ export function PrimaryButton({
   icon?: IconSpec;
   style?: StyleProp<ViewStyle>;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <Pressable
       accessibilityRole="button"
@@ -43,7 +46,7 @@ export function PrimaryButton({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   button: {
     backgroundColor: colors.primaryInk,
     borderRadius: radii.pill,
@@ -67,4 +70,4 @@ const styles = StyleSheet.create({
     fontFamily: fonts.sansSemiBold,
     color: colors.onPrimaryInk,
   },
-});
+}));

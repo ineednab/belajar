@@ -1,23 +1,27 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import type { MORE_QUICK_LOG_KEYS, QuickLogKey, QuickLogs } from '@/db/day-records';
 import { ICONS, type IconSpec } from '@/theme/icons';
-import { colors, spacing } from '@/theme/tokens';
+import { spacing, type ColorTokens } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 import { fonts } from '@/theme/typography';
 
 import { AppText } from './app-text';
 import { Icon } from './icon';
 
-type Tone = { bg: string; ink: string; selectedBg: string };
+type Tone = 'neutral' | 'self';
 
-const NEUTRAL: Tone = { bg: colors.neutralBg, ink: colors.neutralIcon, selectedBg: colors.neutralIcon };
-const SELF: Tone = { bg: colors.selfGreenBg, ink: colors.selfGreenInk, selectedBg: colors.selfGreenInk };
+function toneColors(colors: ColorTokens, tone: Tone) {
+  return tone === 'self'
+    ? { bg: colors.selfGreenBg, ink: colors.selfGreenInk, selectedBg: colors.selfGreenInk }
+    : { bg: colors.neutralBg, ink: colors.neutralIcon, selectedBg: colors.neutralIcon };
+}
 
 export const QUICK_LOGS: readonly { key: QuickLogKey; label: string; icon: IconSpec; tone: Tone }[] = [
-  { key: 'thoughtOfThem', label: 'Memikirkannya', icon: ICONS.brain, tone: NEUTRAL },
-  { key: 'hadACry', label: 'Menangis', icon: ICONS.rain, tone: NEUTRAL },
-  { key: 'choseMyself', label: 'Memilih diriku', icon: ICONS.leaf, tone: SELF },
+  { key: 'thoughtOfThem', label: 'Memikirkannya', icon: ICONS.brain, tone: 'neutral' },
+  { key: 'hadACry', label: 'Menangis', icon: ICONS.rain, tone: 'neutral' },
+  { key: 'choseMyself', label: 'Memilih diriku', icon: ICONS.leaf, tone: 'self' },
 ];
 
 /** Behind "Lainnya" (PRD D22). The list is nabila's call (open question Q8). */
@@ -43,12 +47,15 @@ export function QuickLogButtons({
   onToggle?: (key: QuickLogKey) => void;
   readOnly?: boolean;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const moreOn = MORE_QUICK_LOGS.filter(({ key }) => value[key]).length;
   const [showMore, setShowMore] = useState(false);
   return (
     <View style={styles.wrap}>
       <View style={styles.row}>
-        {QUICK_LOGS.map(({ key, label, icon, tone }) => {
+        {QUICK_LOGS.map(({ key, label, icon, tone: toneName }) => {
+          const tone = toneColors(colors, toneName);
           const selected = value[key];
           return (
             <Pressable
@@ -125,6 +132,7 @@ export function MoreQuickLogChips({
   value: QuickLogs;
   align?: 'center' | 'start';
 }) {
+  const styles = useStyles();
   const on = MORE_QUICK_LOGS.filter(({ key }) => value[key]);
   if (on.length === 0) return null;
   return (
@@ -140,6 +148,8 @@ export function MoreQuickLogChips({
 
 /** Small read-only icons for the quick logs that were on, used inside entry cards. */
 export function QuickLogIcons({ value }: { value: QuickLogs }) {
+  const styles = useStyles();
+  const colors = useColors();
   const on = QUICK_LOGS.filter(({ key }) => value[key]);
   const more = MORE_QUICK_LOGS.filter(({ key }) => value[key]);
   if (on.length === 0 && more.length === 0) {
@@ -151,8 +161,8 @@ export function QuickLogIcons({ value }: { value: QuickLogs }) {
       accessible
       accessibilityLabel={[...on, ...more].map(({ label }) => label).join(', ')}>
       {on.map(({ key, icon, tone }) => (
-        <View key={key} style={[styles.miniCircle, { backgroundColor: tone.bg }]}>
-          <Icon icon={icon} size={16} color={tone.ink} />
+        <View key={key} style={[styles.miniCircle, { backgroundColor: toneColors(colors, tone).bg }]}>
+          <Icon icon={icon} size={16} color={toneColors(colors, tone).ink} />
         </View>
       ))}
       {more.length > 0 && (
@@ -164,7 +174,7 @@ export function QuickLogIcons({ value }: { value: QuickLogs }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   wrap: {
     gap: spacing.md,
   },
@@ -282,4 +292,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+}));

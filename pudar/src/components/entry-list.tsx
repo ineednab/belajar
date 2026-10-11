@@ -3,7 +3,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { isFaded, type JournalEntry } from '@/db/entries';
 import { LOCALE } from '@/lib/locale';
 import { ICONS } from '@/theme/icons';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 
 import { AppText } from './app-text';
 import { Icon } from './icon';
@@ -27,6 +28,8 @@ export function EntryList({
   /** Clamp each entry's text, e.g. on Today where the editor matters more. */
   numberOfLines?: number;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <View style={styles.list}>
       {entries.map((entry) => {
@@ -73,7 +76,7 @@ export function EntryList({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   list: {
     gap: spacing.sm,
   },
@@ -113,4 +116,4 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
   },
-});
+}));

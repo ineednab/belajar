@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable } from 'react-native';
 
 import type { Profile } from '@/db/profiles';
 import { ICONS } from '@/theme/icons';
-import { colors, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 import { typography } from '@/theme/typography';
 
 import { AppText } from './app-text';
@@ -12,6 +13,8 @@ import { ProfileAvatar } from './profile-avatar';
 
 /** Top-of-Today chip that opens the profile switcher. */
 export function ProfileSelector({ profile }: { profile: Profile }) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <Pressable
       accessibilityRole="button"
@@ -33,7 +36,7 @@ export function ProfileSelector({ profile }: { profile: Profile }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   chip: {
     alignSelf: 'flex-start',
     maxWidth: '100%',
@@ -50,4 +53,4 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.7,
   },
-});
+}));

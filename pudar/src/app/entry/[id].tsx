@@ -18,7 +18,8 @@ import { fadeLabel } from '@/lib/fade-label';
 import { getFadeState } from '@/lib/fading';
 import { LOCALE } from '@/lib/locale';
 import { ICONS } from '@/theme/icons';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 
 type Loaded = { entry: JournalEntry; quickLogs: QuickLogs; now: number };
 
@@ -27,6 +28,8 @@ type Loaded = { entry: JournalEntry; quickLogs: QuickLogs; now: number };
  * Lock and Unlock (not on faded entries) and Let Go (always).
  */
 export default function EntryDetailScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { db } = useDatabase();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
@@ -148,7 +151,7 @@ export default function EntryDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   screen: {
     flex: 1,
     backgroundColor: colors.background,
@@ -209,4 +212,4 @@ const styles = StyleSheet.create({
   action: {
     flex: 1,
   },
-});
+}));

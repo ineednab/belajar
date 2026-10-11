@@ -1,12 +1,14 @@
-import { Modal, StyleSheet, View } from 'react-native';
+import { Modal, View } from 'react-native';
 
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles } from '@/theme/theme';
 
 import { AppText } from './app-text';
 import { PrimaryButton } from './primary-button';
 
 /** Shown once, before the first entry is written (PRD §6 Retention notice). */
 export function RetentionNotice({ visible, onAcknowledge }: { visible: boolean; onAcknowledge: () => void }) {
+  const styles = useStyles();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={() => {}}>
       <View style={styles.backdrop}>
@@ -29,12 +31,12 @@ export function RetentionNotice({ visible, onAcknowledge }: { visible: boolean; 
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   backdrop: {
     flex: 1,
     justifyContent: 'center',
     padding: spacing.lg,
-    backgroundColor: 'rgba(67, 56, 58, 0.35)',
+    backgroundColor: colors.scrim,
   },
   sheet: {
     backgroundColor: colors.surface,
@@ -42,4 +44,4 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     gap: spacing.md,
   },
-});
+}));

@@ -7,7 +7,8 @@ import { fadeLabel } from '@/lib/fade-label';
 import { getFadeState } from '@/lib/fading';
 import { LOCALE } from '@/lib/locale';
 import { ICONS } from '@/theme/icons';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 
 import { AppText } from './app-text';
 import { formatEntryTime } from './entry-list';
@@ -32,6 +33,8 @@ export function TimelineCard({
   now: number;
   onPress: () => void;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const state = getFadeState(entry, now);
   const label = fadeLabel(state);
   const date = localDateToDate(entry.date);
@@ -70,7 +73,7 @@ export function TimelineCard({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   row: {
     flexDirection: 'row',
     gap: spacing.sm,
@@ -134,4 +137,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
-});
+}));

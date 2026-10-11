@@ -1,6 +1,7 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
-import { colors, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { createStyles } from '@/theme/theme';
 
 import { AppText } from './app-text';
 import { PrimaryButton } from './primary-button';
@@ -10,6 +11,7 @@ import { PrimaryButton } from './primary-button';
  * so retrying is always safe.
  */
 export function StartupError({ error, onRetry }: { error: Error; onRetry: () => void }) {
+  const styles = useStyles();
   return (
     <View style={styles.container}>
       <AppText variant="heading" style={styles.center}>
@@ -28,7 +30,7 @@ export function StartupError({ error, onRetry }: { error: Error; onRetry: () => 
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -39,4 +41,4 @@ const styles = StyleSheet.create({
   center: {
     textAlign: 'center',
   },
-});
+}));

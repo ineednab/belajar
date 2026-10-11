@@ -15,7 +15,7 @@ export const PROFILE_ICONS: readonly { key: string; icon: IconSpec; label: strin
   { key: 'bird', icon: { sf: 'bird.fill', fallback: 'bird' }, label: 'Burung' },
 ];
 
-/** Avatar fills. The avatar's icon or initial is drawn in `colors.text` on top (≥ 3:1, tested). */
+/** Avatar fills. The avatar's icon or initial is drawn in `onAccent` on top (≥ 3:1, tested). */
 export const PROFILE_COLORS: readonly { hex: string; label: string }[] = [
   { hex: '#D97C8B', label: 'Mawar' },
   { hex: '#E8A77E', label: 'Persik' },

@@ -1,12 +1,14 @@
 import type { ReactNode } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
-import { colors, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { createStyles } from '@/theme/theme';
 
 import { AppText } from './app-text';
 
 /** A calm, scrollable reading page under Settings (fading, privacy, support). */
 export function InfoPage({ title, children }: { title: string; children: ReactNode }) {
+  const styles = useStyles();
   return (
     <ScrollView
       style={styles.page}
@@ -22,6 +24,7 @@ export function InfoPage({ title, children }: { title: string; children: ReactNo
 
 /** A heading with its paragraphs. */
 export function InfoSection({ title, children }: { title: string; children: ReactNode }) {
+  const styles = useStyles();
   return (
     <View style={styles.section}>
       <AppText variant="heading" accessibilityRole="header" style={styles.sectionTitle}>
@@ -36,7 +39,7 @@ export function Paragraph({ children }: { children: ReactNode }) {
   return <AppText variant="body">{children}</AppText>;
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   page: {
     flex: 1,
     backgroundColor: colors.background,
@@ -57,4 +60,4 @@ const styles = StyleSheet.create({
     fontSize: 19,
     lineHeight: 25,
   },
-});
+}));

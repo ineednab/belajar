@@ -3,7 +3,8 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { MAX_ENTRY_LENGTH } from '@/lib/fading';
 import { LOCALE } from '@/lib/locale';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 import { typography } from '@/theme/typography';
 
 import { AppText } from './app-text';
@@ -18,6 +19,8 @@ export const JournalEditor = forwardRef<
   TextInput,
   { value: string; onChange: (text: string) => void; locked: boolean; onLockedPress: () => void }
 >(function JournalEditor({ value, onChange, locked, onLockedPress }, ref) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <View style={styles.box}>
       <TextInput
@@ -48,7 +51,7 @@ export const JournalEditor = forwardRef<
   );
 });
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   box: {
     backgroundColor: colors.surface,
     borderRadius: radii.md,
@@ -59,6 +62,7 @@ const styles = StyleSheet.create({
   },
   input: {
     ...typography.body,
+    color: colors.text,
     fontSize: 15,
     lineHeight: 22,
     minHeight: 96,
@@ -68,4 +72,4 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     fontSize: 12,
   },
-});
+}));

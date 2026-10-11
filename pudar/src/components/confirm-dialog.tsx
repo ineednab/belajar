@@ -1,6 +1,7 @@
-import { Modal, StyleSheet, View } from 'react-native';
+import { Modal, View } from 'react-native';
 
-import { colors, radii, spacing } from '@/theme/tokens';
+import { radii, spacing } from '@/theme/tokens';
+import { createStyles } from '@/theme/theme';
 
 import { AppText } from './app-text';
 import { PrimaryButton } from './primary-button';
@@ -24,6 +25,7 @@ export function ConfirmDialog({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const styles = useStyles();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <View style={styles.backdrop}>
@@ -42,12 +44,12 @@ export function ConfirmDialog({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   backdrop: {
     flex: 1,
     justifyContent: 'center',
     padding: spacing.lg,
-    backgroundColor: 'rgba(67, 56, 58, 0.35)',
+    backgroundColor: colors.scrim,
   },
   sheet: {
     backgroundColor: colors.surface,
@@ -59,4 +61,4 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     marginTop: spacing.xs,
   },
-});
+}));

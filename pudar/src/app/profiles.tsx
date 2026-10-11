@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { Icon } from '@/components/icon';
@@ -9,10 +9,13 @@ import { TextButton } from '@/components/profile-form';
 import { isClosed, type Profile } from '@/db/profiles';
 import { useProfiles } from '@/profiles/provider';
 import { ICONS } from '@/theme/icons';
-import { colors, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
+import { createStyles, useColors } from '@/theme/theme';
 
 /** Profile switcher sheet (PRD §6 Today: profile selector). */
 export default function ProfilesSheet() {
+  const styles = useStyles();
+  const colors = useColors();
   const { profiles, activeProfile, setActive } = useProfiles();
 
   const choose = async (id: string) => {
@@ -63,7 +66,7 @@ export default function ProfilesSheet() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((colors) => ({
   content: {
     padding: spacing.lg,
     gap: spacing.sm,
@@ -93,4 +96,4 @@ const styles = StyleSheet.create({
   newButton: {
     marginTop: spacing.md,
   },
-});
+}));
