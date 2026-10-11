@@ -1,16 +1,21 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { ProfileForm, TextButton } from '@/components/profile-form';
-import { todayLocal } from '@/lib/date';
+import { isClosed } from '@/db/profiles';
+import { localDateToDate, todayLocal } from '@/lib/date';
+import { LOCALE } from '@/lib/locale';
 import { useProfiles } from '@/profiles/provider';
 import { spacing } from '@/theme/tokens';
 
 export default function EditProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { profiles, update, remove, startAgain } = useProfiles();
+  const { profiles, update, remove, startAgain, reopen } = useProfiles();
   const profile = profiles.find((p) => p.id === id);
+  const [confirmReopen, setConfirmReopen] = useState(false);
 
   if (!profile) {
     return null; // deleted while this screen was closing
@@ -18,12 +23,12 @@ export default function EditProfileScreen() {
 
   const confirmStartAgain = () =>
     Alert.alert(
-      'Start again from today?',
-      'Starting again is part of it. Your count will begin from today.',
+      'Mulai lagi dari hari ini?',
+      'Memulai lagi adalah bagian dari prosesnya. Hitunganmu akan dimulai dari hari ini.',
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Batal', style: 'cancel' },
         {
-          text: 'Start again',
+          text: 'Mulai lagi',
           onPress: async () => {
             await startAgain(profile.id);
             router.back();
@@ -34,12 +39,12 @@ export default function EditProfileScreen() {
 
   const confirmDelete = () =>
     Alert.alert(
-      `Delete "${profile.name}"?`,
-      "This permanently deletes this Pudar, with all of its entries and check-ins. This can't be undone.",
+      `Hapus "${profile.name}"?`,
+      'Pudar ini akan terhapus selamanya, beserta semua tulisan dan catatan perasaannya. Ini tidak bisa dibatalkan.',
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Batal', style: 'cancel' },
         {
-          text: 'Delete',
+          text: 'Hapus',
           style: 'destructive',
           onPress: async () => {
             await remove(profile.id);
@@ -49,8 +54,12 @@ export default function EditProfileScreen() {
       ],
     );
 
+  const closed = isClosed(profile);
   const canStartAgain =
-    profile.noContactStartDate !== null && profile.noContactStartDate !== todayLocal();
+    !closed && profile.noContactStartDate !== null && profile.noContactStartDate !== todayLocal();
+  const closedSince = profile.closedOn
+    ? localDateToDate(profile.closedOn).toLocaleDateString(LOCALE, { day: 'numeric', month: 'long', year: 'numeric' })
+    : null;
 
   return (
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
@@ -62,23 +71,44 @@ export default function EditProfileScreen() {
           accentColor: profile.accentColor,
           noContactStartDate: profile.noContactStartDate,
         }}
-        submitLabel="Save changes"
+        submitLabel="Simpan perubahan"
         onSubmit={async (input) => {
           await update(profile.id, input);
           router.back();
         }}>
         <View style={styles.actions}>
+          {closed && (
+            <View style={styles.action}>
+              <TextButton label="Buka lagi" onPress={() => setConfirmReopen(true)} />
+              <AppText variant="caption">
+                Selesai sejak {closedSince}.
+                {profile.reopenCount > 0 ? ` Dibuka lagi ${profile.reopenCount} kali.` : ''}
+              </AppText>
+            </View>
+          )}
           {canStartAgain && (
             <View style={styles.action}>
-              <TextButton label="Start again from today" onPress={confirmStartAgain} />
-              <AppText variant="caption">Resets the no-contact count to today.</AppText>
+              <TextButton label="Mulai lagi dari hari ini" onPress={confirmStartAgain} />
+              <AppText variant="caption">Mengatur ulang hitungan tanpa kontak ke hari ini.</AppText>
             </View>
           )}
           <View style={styles.action}>
-            <TextButton label="Delete this Pudar" destructive onPress={confirmDelete} />
+            <TextButton label="Hapus Pudar ini" destructive onPress={confirmDelete} />
           </View>
         </View>
       </ProfileForm>
+      <ConfirmDialog
+        visible={confirmReopen}
+        title={`Buka lagi Pudar untuk ${profile.name}?`}
+        body="Tidak apa-apa. Kadang kita belum benar-benar selesai. Kamu bisa menulis dan mencatat perasaan lagi mulai hari ini, dan hitungan harinya berjalan lagi."
+        confirmLabel="Buka lagi"
+        onConfirm={async () => {
+          setConfirmReopen(false);
+          await reopen(profile.id);
+          router.back();
+        }}
+        onCancel={() => setConfirmReopen(false)}
+      />
     </ScrollView>
   );
 }

@@ -12,7 +12,7 @@ export default function NewProfileScreen() {
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <ProfileForm
         initial={{ name: '', icon: null, accentColor: null, noContactStartDate: null }}
-        submitLabel="Create Pudar"
+        submitLabel="Buat Pudar"
         onSubmit={async (input) => {
           await create(input);
           router.dismissAll(); // back to the tabs, now showing the new Pudar

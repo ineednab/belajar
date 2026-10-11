@@ -1,25 +1,26 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
-import { colors } from '@/theme/tokens';
+import { useColors } from '@/theme/theme';
 
 export function AppTabs() {
+  const colors = useColors();
   return (
     <NativeTabs
       backgroundColor={colors.surface}
       tintColor={colors.primaryInk}
       labelStyle={{ color: colors.mutedInk }}>
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Label>Today</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf={{ default: 'sun.max', selected: 'sun.max.fill' }} />
+        <NativeTabs.Trigger.Label>Hari ini</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="memory">
-        <NativeTabs.Trigger.Label>Memory</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf={{ default: 'book.closed', selected: 'book.closed.fill' }} />
+        <NativeTabs.Trigger.Label>Kenangan</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: 'clock', selected: 'clock.fill' }} />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="settings">
-        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>Pengaturan</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf={{ default: 'gearshape', selected: 'gearshape.fill' }} />
       </NativeTabs.Trigger>
     </NativeTabs>

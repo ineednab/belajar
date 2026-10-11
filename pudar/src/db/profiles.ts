@@ -18,6 +18,12 @@ export type Profile = {
   noContactStartDate: LocalDate | null;
   createdAt: number;
   updatedAt: number;
+  /** Set while the Pudar is closed ("Aku sudah selesai dengan orang ini", PRD D23). */
+  closedAt: number | null;
+  /** The local date it was closed; the counter stops here. */
+  closedOn: LocalDate | null;
+  /** How many times it was opened again after closing. */
+  reopenCount: number;
 };
 
 type ProfileRow = {
@@ -28,10 +34,13 @@ type ProfileRow = {
   no_contact_start_date: string | null;
   created_at: number;
   updated_at: number;
+  closed_at: number | null;
+  closed_on: string | null;
+  reopen_count: number;
 };
 
 const COLUMNS =
-  'id, name, icon, accent_color, no_contact_start_date, created_at, updated_at';
+  'id, name, icon, accent_color, no_contact_start_date, created_at, updated_at, closed_at, closed_on, reopen_count';
 
 function toProfile(row: ProfileRow): Profile {
   return {
@@ -42,7 +51,14 @@ function toProfile(row: ProfileRow): Profile {
     noContactStartDate: row.no_contact_start_date,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    closedAt: row.closed_at,
+    closedOn: row.closed_on,
+    reopenCount: row.reopen_count,
   };
+}
+
+export function isClosed(profile: Pick<Profile, 'closedAt'>): boolean {
+  return profile.closedAt !== null;
 }
 
 export class ProfileValidationError extends Error {
@@ -83,7 +99,8 @@ export async function createProfile(
 ): Promise<Profile> {
   const { name, icon, accentColor, noContactStartDate } = validated(input, context.today);
   await db.runAsync(
-    `INSERT INTO profiles (${COLUMNS}) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO profiles (id, name, icon, accent_color, no_contact_start_date, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
     context.id,
     name,
     icon,
@@ -100,6 +117,9 @@ export async function createProfile(
     noContactStartDate,
     createdAt: context.now,
     updatedAt: context.now,
+    closedAt: null,
+    closedOn: null,
+    reopenCount: 0,
   };
 }
 
@@ -138,6 +158,53 @@ export async function startAgainToday(
     context.now,
     id,
   );
+}
+
+/**
+ * "Aku sudah selesai dengan orang ini" (PRD D23): the Pudar becomes read-only history and its
+ * counter stops at `today`. Entries keep fading on schedule. Closing twice changes nothing.
+ */
+export async function closeProfile(
+  db: Db,
+  id: string,
+  context: { now: number; today: LocalDate },
+): Promise<void> {
+  await db.runAsync(
+    `UPDATE profiles SET closed_at = ?, closed_on = ?, updated_at = ?
+     WHERE id = ? AND closed_at IS NULL`,
+    context.now,
+    context.today,
+    context.now,
+    id,
+  );
+}
+
+/** "Buka lagi": the Pudar is writable again and the reopen is counted (PRD D23). */
+export async function reopenProfile(db: Db, id: string, now: number): Promise<void> {
+  await db.runAsync(
+    `UPDATE profiles SET closed_at = NULL, closed_on = NULL, reopen_count = reopen_count + 1, updated_at = ?
+     WHERE id = ? AND closed_at IS NOT NULL`,
+    now,
+    id,
+  );
+}
+
+/** Throws if the profile is closed, so nothing new is written to read-only history. */
+export async function assertProfileOpen(db: Db, id: string): Promise<void> {
+  const row = await db.getFirstAsync<{ closed_at: number | null }>(
+    'SELECT closed_at FROM profiles WHERE id = ?',
+    id,
+  );
+  if (row && row.closed_at !== null) {
+    throw new ProfileClosedError();
+  }
+}
+
+export class ProfileClosedError extends Error {
+  constructor() {
+    super('Pudar ini sudah selesai, jadi hanya bisa dibaca.');
+    this.name = 'ProfileClosedError';
+  }
 }
 
 /** Permanently deletes the profile; its day records and entries go with it (ON DELETE CASCADE). */

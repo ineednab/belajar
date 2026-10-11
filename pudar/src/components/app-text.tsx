@@ -1,5 +1,6 @@
 import { Text, type TextProps } from 'react-native';
 
+import { useColors } from '@/theme/theme';
 import { typography, type TypographyVariant } from '@/theme/typography';
 
 export function AppText({
@@ -7,5 +8,7 @@ export function AppText({
   style,
   ...props
 }: TextProps & { variant?: TypographyVariant }) {
-  return <Text style={[typography[variant], style]} {...props} />;
+  const colors = useColors();
+  const color = variant === 'caption' ? colors.mutedInk : colors.text;
+  return <Text style={[typography[variant], { color }, style]} {...props} />;
 }
