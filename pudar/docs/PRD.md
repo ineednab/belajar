@@ -219,7 +219,7 @@ Three circular toggles in one row:
 - No counts, scores, or feedback messages.
 
 #### Journal editor
-- Placeholder: a gentle opening question that changes each day (`src/lib/prompts.ts`, 28 questions, e.g. "Apa yang ingin kamu katakan, tapi tidak bisa?"). Questions never name the person, judge, or ask for a score. While the box is empty, a small "Pertanyaan lain" button under it shows the next one. Added from the competitor benchmark (2026-10-11).
+- Placeholder: a gentle opening question that changes each day (`src/lib/prompts.ts`, 60 questions, e.g. "Apa yang ingin kamu katakan, tapi tidak bisa?"). Questions follow nabila's emotional-safety principles: gentle, not probing; present-focused; no pressure to improve; room for lightness; always optional. They come in three tones (ringan, reflektif, menenangkan) that take turns, never three of one tone in a row. Before the rotation is final, beta testers are asked which questions feel comfortable, neutral, or too heavy. While the box is empty, a small "Pertanyaan lain" button under it shows the next one. Added from the competitor benchmark (2026-10-11).
 - Hard limit 2,000 characters with a live count ("1,240 / 2,000").
 - Save button: "Save my journal". Disabled when the trimmed text is empty or unchanged.
 - First save creates the entry: `createdAt = now`, `retentionExpiresAt = createdAt + 30 days`. Later saves update `content` and `updatedAt` only.
