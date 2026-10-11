@@ -34,6 +34,7 @@ import { useDatabase } from '@/db/provider';
 import { getSetting, setSetting } from '@/db/settings';
 import { useLocalToday } from '@/hooks/use-local-today';
 import { compareLocalDates, diffCalendarDays, weekStartsOnFromLocale, type LocalDate } from '@/lib/date';
+import { promptFor } from '@/lib/prompts';
 import { TextButton } from '@/components/profile-form';
 import { useProfiles } from '@/profiles/provider';
 import { ICONS } from '@/theme/icons';
@@ -92,6 +93,8 @@ function Day({ profile }: { profile: Profile }) {
   const [acknowledged, setAcknowledged] = useState<boolean | null>(null);
   const [showNotice, setShowNotice] = useState(false);
   const editorRef = useRef<TextInput>(null);
+  // Steps through the opening questions when the person asks for another one.
+  const [promptOffset, setPromptOffset] = useState(0);
 
   // A closed Pudar is read-only history (PRD D23).
   const closed = isClosed(profile);
@@ -338,7 +341,19 @@ function Day({ profile }: { profile: Profile }) {
             onChange={setDraft}
             locked={acknowledged !== true}
             onLockedPress={() => acknowledged === false && setShowNotice(true)}
+            placeholder={promptFor(writableDate, promptOffset)}
           />
+          {draft === '' && !editing && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Pertanyaan lain"
+              onPress={() => setPromptOffset((n) => n + 1)}
+              hitSlop={8}
+              style={({ pressed }) => [styles.anotherPrompt, pressed && styles.pressed]}>
+              <Icon icon={ICONS.another} size={14} color={colors.primaryInk} />
+              <AppText style={styles.anotherPromptText}>Pertanyaan lain</AppText>
+            </Pressable>
+          )}
           <PrimaryButton
             label={editing ? 'Simpan perubahan' : 'Simpan jurnalku'}
             onPress={save}
@@ -508,6 +523,19 @@ const useStyles = createStyles((colors) => ({
   todayEntries: {
     gap: spacing.sm,
     marginTop: spacing.sm,
+  },
+  anotherPrompt: {
+    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: -spacing.sm,
+  },
+  anotherPromptText: {
+    fontFamily: fonts.sansMedium,
+    fontSize: 14,
+    lineHeight: 18,
+    color: colors.primaryInk,
   },
   saved: {
     flexDirection: 'row',

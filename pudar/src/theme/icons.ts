@@ -30,4 +30,5 @@ export const ICONS = {
   trash: { sf: 'trash', fallback: 'trash-can-outline' },
   external: { sf: 'arrow.up.right', fallback: 'arrow-top-right' },
   phone: { sf: 'phone', fallback: 'phone-outline' },
+  another: { sf: 'arrow.triangle.2.circlepath', fallback: 'refresh' },
 } as const satisfies Record<string, IconSpec>;

@@ -23,6 +23,7 @@
 | Closing a Pudar | — | **"Aku sudah selesai dengan orang ini"** turns a Pudar into read-only history; reopening is possible and counted (D23) |
 | Dark mode (§8) | Light only | **Light and dark**, following the system setting |
 | "Ingin chat dia" | — | Opens a write-it-here screen with a 10-minute breathing wait, then Lepaskan or Simpan (§5) |
+| Editor | Fixed placeholder | A **daily opening question** with "Pertanyaan lain" (§6 Journal editor) |
 | Today | — | A "Hari ini" button returns to today from any past day or week |
 | Visual reference | — | nabila's mockups (`/mockup/referensi-desain-nabila-v1.png` in the project files); serif headings use Fraunces Regular |
 | Order of work (§10) | Epics 1 → 9 | Roadmap in §10.0 |
@@ -218,7 +219,7 @@ Three circular toggles in one row:
 - No counts, scores, or feedback messages.
 
 #### Journal editor
-- Placeholder: "Write what's on your mind…"
+- Placeholder: a gentle opening question that changes each day (`src/lib/prompts.ts`, 28 questions, e.g. "Apa yang ingin kamu katakan, tapi tidak bisa?"). Questions never name the person, judge, or ask for a score. While the box is empty, a small "Pertanyaan lain" button under it shows the next one. Added from the competitor benchmark (2026-10-11).
 - Hard limit 2,000 characters with a live count ("1,240 / 2,000").
 - Save button: "Save my journal". Disabled when the trimmed text is empty or unchanged.
 - First save creates the entry: `createdAt = now`, `retentionExpiresAt = createdAt + 30 days`. Later saves update `content` and `updatedAt` only.
@@ -593,6 +594,7 @@ Work runs in this order; each step is reviewed against nabila's mockups before t
 | 10 | Settings and privacy, Delete all data (Epic 7) | Done in PR #3; support copy still Q5 |
 | 11 | Dark mode | Done in PR #3 (§8 Dark mode) |
 | 11a | "Ingin chat dia" screen (benchmark idea 1) | Done in PR #3 (§5 Lainnya) |
+| 11b | Daily opening questions in the editor (benchmark idea 2) | Done in PR #3 (§6 Journal editor) |
 | 12 | Onboarding, app lock, hardening (Epic 8) | |
 | 13 | App Store release (Epic 9) | |
 
