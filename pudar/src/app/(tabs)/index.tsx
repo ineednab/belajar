@@ -2,7 +2,7 @@ import * as Crypto from 'expo-crypto';
 import { getCalendars } from 'expo-localization';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Pressable, StyleSheet, View, type TextInput } from 'react-native';
+import { Alert, AppState, Pressable, StyleSheet, View, type TextInput } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { EmptyState } from '@/components/empty-state';
@@ -17,6 +17,7 @@ import { RetentionNotice } from '@/components/retention-notice';
 import { Screen } from '@/components/screen';
 import { SecondaryButton } from '@/components/secondary-button';
 import { WeekStrip, type DayMark } from '@/components/week-strip';
+import { deleteDraft, getDraft, saveDraft } from '@/db/drafts';
 import { getQuickLogs, NO_QUICK_LOGS, saveQuickLogs, type QuickLogKey, type QuickLogs } from '@/db/day-records';
 import {
   createEntry,
@@ -33,10 +34,11 @@ import { useLocalToday } from '@/hooks/use-local-today';
 import { compareLocalDates, diffCalendarDays, weekStartsOnFromLocale, type LocalDate } from '@/lib/date';
 import { useProfiles } from '@/profiles/provider';
 import { ICONS } from '@/theme/icons';
-import { colors, spacing } from '@/theme/tokens';
+import { colors, radii, spacing } from '@/theme/tokens';
 import { fonts } from '@/theme/typography';
 
 const WEEK_STARTS_ON = weekStartsOnFromLocale(getCalendars()[0]?.firstWeekday);
+const DRAFT_DEBOUNCE_MS = 1000;
 
 export default function TodayScreen() {
   const { activeProfile } = useProfiles();
@@ -68,10 +70,15 @@ function Day({ profile }: { profile: Profile }) {
   const [writableDate, setWritableDate] = useState(today);
 
   const [quickLogs, setQuickLogs] = useState<QuickLogs>(NO_QUICK_LOGS);
+  // Entries of the selected day, and of the day the editor writes to (often the same day).
   const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [writableEntries, setWritableEntries] = useState<JournalEntry[]>([]);
   // The entry being edited, or null while writing a new one (PRD D5).
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
+  // False until the autosaved draft has been restored, so autosave can't overwrite it first.
+  const [draftReady, setDraftReady] = useState(false);
+  const [stripKey, setStripKey] = useState(0);
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [marks, setMarks] = useState<Map<LocalDate, DayMark>>(new Map());
   const [week, setWeek] = useState<{ from: LocalDate; to: LocalDate } | null>(null);
@@ -80,9 +87,9 @@ function Day({ profile }: { profile: Profile }) {
   const editorRef = useRef<TextInput>(null);
 
   const writable = selected === writableDate;
-  const editing = editingId === null ? null : (entries.find((e) => e.id === editingId) ?? null);
+  const editing = editingId === null ? null : (writableEntries.find((e) => e.id === editingId) ?? null);
   const baseline = editing?.content ?? '';
-  const dirty = writable && draft !== baseline;
+  const dirty = draftReady && draft !== baseline;
 
   // Midnight rule (PRD §6 Editor): move to the new today unless there's an unsaved draft.
   if (today !== writableDate && !dirty) {
@@ -94,6 +101,55 @@ function Day({ profile }: { profile: Profile }) {
     getSetting(db, 'retention_ack_at').then((value) => setAcknowledged(value !== null));
   }, [db]);
 
+  // Restore this Pudar's autosaved draft (PRD D21). A draft from an earlier day comes back as a
+  // new entry for today, since that day is no longer writable; an unsaved edit of an old entry
+  // can't be applied anymore and is dropped.
+  useEffect(() => {
+    let cancelled = false;
+    getDraft(db, profile.id, Date.now()).then(async (found) => {
+      if (cancelled) return;
+      if (found && (found.date === today || found.entryId === null)) {
+        setEditingId(found.date === today ? found.entryId : null);
+        setDraft(found.content);
+      } else if (found) {
+        await deleteDraft(db, profile.id);
+      }
+      setDraftReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+    // Only on mount: `today` changing later is handled by the midnight rule.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [db, profile.id]);
+
+  // Autosave about a second after typing stops, and right away when the app goes to the
+  // background or this Pudar is left (PRD D21).
+  const pendingDraft = useRef<(() => void) | null>(null);
+  useEffect(() => {
+    if (!draftReady) return;
+    const write = () => {
+      pendingDraft.current = null;
+      if (dirty) {
+        saveDraft(db, { profileId: profile.id, date: writableDate, entryId: editingId, content: draft }, Date.now());
+      } else {
+        deleteDraft(db, profile.id);
+      }
+    };
+    pendingDraft.current = write;
+    const timer = setTimeout(write, DRAFT_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [db, profile.id, draftReady, dirty, draft, editingId, writableDate]);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') pendingDraft.current?.();
+    });
+    return () => {
+      subscription.remove();
+      pendingDraft.current?.();
+    };
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     const now = Date.now();
@@ -104,14 +160,22 @@ function Day({ profile }: { profile: Profile }) {
       if (cancelled) return;
       setQuickLogs(logs);
       setEntries(found);
-      setEditingId(null);
-      setDraft('');
       setSavedAt(null);
     });
     return () => {
       cancelled = true;
     };
   }, [db, profile.id, selected]);
+
+  useEffect(() => {
+    let cancelled = false;
+    listEntriesForDate(db, profile.id, writableDate, Date.now()).then((found) => {
+      if (!cancelled) setWritableEntries(found);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [db, profile.id, writableDate]);
 
   const [marksVersion, setMarksVersion] = useState(0);
   useEffect(() => {
@@ -136,11 +200,13 @@ function Day({ profile }: { profile: Profile }) {
 
   const save = async () => {
     const saved = await persistEntry(db, profile.id, writableDate, editing?.id ?? null, draft);
-    if (editing) {
-      setEntries((list) => list.map((e) => (e.id === saved.id ? saved : e)));
-    } else {
-      setEntries((list) => [saved, ...list]);
-    }
+    const apply = (list: JournalEntry[]) =>
+      editing ? list.map((e) => (e.id === saved.id ? saved : e)) : [saved, ...list];
+    setWritableEntries(apply);
+    if (selected === writableDate) setEntries(apply);
+    // The words are an entry now, so the draft goes at once rather than after the debounce.
+    pendingDraft.current = null;
+    await deleteDraft(db, profile.id);
     // Saving clears the editor for the next entry (PRD D5).
     setEditingId(null);
     setDraft('');
@@ -158,7 +224,7 @@ function Day({ profile }: { profile: Profile }) {
       open();
       return;
     }
-    // Drafts don't autosave yet (roadmap step 4), so ask before dropping unsaved text.
+    // There's one draft per Pudar, so opening another entry would replace the unsaved text.
     Alert.alert('Tulisanmu belum disimpan', 'Kalau pindah sekarang, tulisan yang belum disimpan akan hilang.', [
       { text: 'Tetap menulis', style: 'cancel' },
       { text: 'Buang tulisan', style: 'destructive', onPress: open },
@@ -173,14 +239,34 @@ function Day({ profile }: { profile: Profile }) {
   };
 
   const isToday = selected === today;
+  // The "Hari ini" pill shows on a past day, or while an earlier week is in view (PRD §6).
+  const awayFromToday = selected !== writableDate || (week !== null && compareLocalDates(week.to, writableDate) < 0);
+  const goToToday = () => {
+    setSelected(writableDate);
+    // Remounting the strip brings today's week back into view even if today was already selected.
+    setStripKey((n) => n + 1);
+  };
   const start = profile.noContactStartDate;
   const days = start && compareLocalDates(start, selected) <= 0 ? diffCalendarDays(start, selected) : null;
   const canSave = dirty && draft.trim().length > 0;
 
   return (
     <Screen>
-      <ProfileSelector profile={profile} />
+      <View style={styles.header}>
+        <ProfileSelector profile={profile} />
+        {awayFromToday && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Kembali ke hari ini"
+            onPress={goToToday}
+            hitSlop={8}
+            style={({ pressed }) => [styles.todayPill, pressed && styles.pressed]}>
+            <AppText style={styles.todayPillText}>Hari ini</AppText>
+          </Pressable>
+        )}
+      </View>
       <WeekStrip
+        key={stripKey}
         selected={selected}
         today={today}
         weekStartsOn={WEEK_STARTS_ON}
@@ -242,17 +328,23 @@ function Day({ profile }: { profile: Profile }) {
               <AppText variant="caption">Baru saja tersimpan</AppText>
             </View>
           )}
-          {!editing && (
+          {dirty ? (
             <AppText variant="caption" style={styles.note}>
-              Kamu bisa menulis lebih dari sekali hari ini.
+              Draf disimpan otomatis, jadi tulisanmu aman walau aplikasi tertutup.
             </AppText>
+          ) : (
+            !editing && (
+              <AppText variant="caption" style={styles.note}>
+                Kamu bisa menulis lebih dari sekali hari ini.
+              </AppText>
+            )
           )}
-          {entries.length > 0 && (
+          {writableEntries.length > 0 && (
             <View style={styles.todayEntries}>
               <AppText variant="label">
-                {isToday ? 'Tulisan hari ini' : 'Tulisan hari itu'} · {entries.length}
+                {isToday ? 'Tulisan hari ini' : 'Tulisan hari itu'} · {writableEntries.length}
               </AppText>
-              <EntryList entries={entries} editingId={editingId} onPress={startEditing} numberOfLines={3} />
+              <EntryList entries={writableEntries} editingId={editingId} onPress={startEditing} numberOfLines={3} />
             </View>
           )}
         </>
@@ -330,6 +422,29 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginTop: spacing.sm,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+  },
+  todayPill: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs + 2,
+    borderRadius: radii.pill,
+    borderWidth: 1,
+    borderColor: colors.primaryInk,
+    backgroundColor: colors.surface,
+  },
+  todayPillText: {
+    fontFamily: fonts.sansMedium,
+    fontSize: 14,
+    lineHeight: 18,
+    color: colors.primaryInk,
+  },
+  pressed: {
+    opacity: 0.7,
   },
   note: {
     textAlign: 'center',

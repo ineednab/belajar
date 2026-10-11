@@ -77,6 +77,17 @@ export const MIGRATIONS: readonly string[] = [
   CREATE INDEX idx_entries_pending_purge ON journal_entries (retention_expires_at)
     WHERE content IS NOT NULL;
   `,
+
+  // v2 → v3: one autosaved editor draft per profile (PRD D21). A draft is not an entry.
+  `
+  CREATE TABLE drafts (
+    profile_id  TEXT PRIMARY KEY NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    date        TEXT NOT NULL,
+    entry_id    TEXT,
+    content     TEXT NOT NULL CHECK (length(content) BETWEEN 1 AND 2000),
+    updated_at  INTEGER NOT NULL
+  );
+  `,
 ];
 
 export const SCHEMA_VERSION = MIGRATIONS.length;

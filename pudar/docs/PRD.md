@@ -221,7 +221,7 @@ Three circular toggles in one row:
 - First save creates the entry: `createdAt = now`, `retentionExpiresAt = createdAt + 30 days`. Later saves update `content` and `updatedAt` only.
 - Clearing all text does not delete an existing entry; deletion only happens through Let Go.
 - **Writability is checked when the editor opens, not on save.** If the local date changes while the editor is open, the draft stays bound to the date it was opened on and can still be saved. Once the editor closes, that date is read-only.
-- Unsaved text is saved automatically as a draft per profile and restored on return, including after the app is closed (D21). Switching profiles keeps each Pudar's draft, so no prompt is needed.
+- Unsaved text is saved automatically as a draft per profile and restored on return, including after the app is closed (D21). Switching profiles keeps each Pudar's draft, so no prompt is needed. A restored draft from an earlier day becomes a new entry draft for today; an unsaved edit of an earlier day's entry is dropped, because that day is read-only. While the draft differs from what's saved, a line under the button says "Draf disimpan otomatis, jadi tulisanmu aman walau aplikasi tertutup."
 - Save confirmation: a brief, calm toast ("Saved").
 - **Gate:** the first time the user tries to write, the retention notice (§6 P0 — Retention notice) must be acknowledged before the editor accepts input.
 
@@ -371,7 +371,7 @@ type JournalEntry = {
 
 `retentionExpiresAt` is stored, not recomputed, so a future change to the retention period never retroactively changes existing entries. `fadedAt` records when the purge actually ran (which can be later than `retentionExpiresAt` if the app was not opened). It is used for debugging and the "faded" label, never for computing status.
 
-### SQLite schema (after migration 2)
+### SQLite schema (after migration 3)
 
 ```sql
 CREATE TABLE profiles (
@@ -410,6 +410,15 @@ CREATE TABLE journal_entries (
 CREATE INDEX idx_entries_profile_date ON journal_entries (profile_id, date DESC, created_at DESC);
 CREATE INDEX idx_entries_pending_purge ON journal_entries (retention_expires_at)
   WHERE content IS NOT NULL;
+
+-- Migration 3 (D21): one autosaved editor draft per profile. Not an entry: never listed, never fades.
+CREATE TABLE drafts (
+  profile_id  TEXT PRIMARY KEY NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  date        TEXT NOT NULL,     -- the date the editor was writing for
+  entry_id    TEXT,              -- the entry being edited, or NULL for a new one
+  content     TEXT NOT NULL CHECK (length(content) BETWEEN 1 AND 2000),
+  updated_at  INTEGER NOT NULL
+);
 
 CREATE TABLE settings (
   key    TEXT PRIMARY KEY NOT NULL,
@@ -553,7 +562,7 @@ Work runs in this order; each step is reviewed against nabila's mockups before t
 | 1 | Today screen restyle and build (Epic 4, first pass) | Done in PR #3 |
 | 2 | Bahasa Indonesia for all existing copy (D20) | Done in PR #3 |
 | 3 | Several entries per day: migration 2, repository, Today list (D5) | Done in PR #3 |
-| 4 | Automatic drafts (D21) and the "Hari ini" button | Small, and protects users' words right away |
+| 4 | Automatic drafts (D21) and the "Hari ini" button | Done in PR #3 |
 | 5 | Fading engine and purge (Epic 3) | Memory needs real statuses |
 | 6 | Memory timeline and entry detail (Epic 6) | Next mockup screens |
 | 7 | Lock, Unlock and Let Go (Epic 5) | Lives on entry detail |

@@ -50,6 +50,7 @@ describe('migrate', () => {
     );
     expect(tables.map((t) => t.name)).toEqual([
       'day_records',
+      'drafts',
       'journal_entries',
       'profiles',
       'settings',
