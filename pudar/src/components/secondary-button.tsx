@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import type { IconSpec } from '@/theme/icons';
 import { fonts } from '@/theme/typography';
@@ -13,18 +13,20 @@ export function SecondaryButton({
   onPress,
   icon,
   compact = false,
+  style,
 }: {
   label: string;
   onPress: () => void;
   icon?: IconSpec;
   /** Hug the label instead of filling the row. */
   compact?: boolean;
+  style?: StyleProp<ViewStyle>;
 }) {
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => [styles.button, compact && styles.compact, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.button, compact && styles.compact, style, pressed && styles.pressed]}>
       {icon && <Icon icon={icon} size={16} color={colors.primaryInk} />}
       <AppText style={styles.label}>{label}</AppText>
     </Pressable>

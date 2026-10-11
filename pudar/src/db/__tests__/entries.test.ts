@@ -1,10 +1,14 @@
 import { configureConnection } from '../connection';
+import { getQuickLogs, NO_QUICK_LOGS, saveQuickLogs } from '../day-records';
 import {
   createEntry,
   EntryValidationError,
   getEntry,
+  letGoEntry,
   listEntriesForDate,
+  listEntriesForProfile,
   listEntryMarks,
+  setEntryLocked,
   updateEntry,
 } from '../entries';
 import { migrate } from '../migrations';
@@ -88,5 +92,46 @@ describe('journal entries repository', () => {
     expect(marks.get('2026-10-01')).toEqual({ faded: true });
     expect(marks.get('2026-10-05')).toEqual({ faded: false });
     expect(marks.has('2026-10-02')).toBe(false);
+  });
+});
+
+describe('lock and Let Go', () => {
+  let db: TestDb;
+
+  beforeEach(async () => {
+    db = await createTestDb();
+    await configureConnection(db);
+    await migrate(db);
+    const profile = { name: 'V', icon: null, accentColor: null, noContactStartDate: null };
+    await createProfile(db, profile, { id: 'p1', now: T0, today: TODAY });
+    await createEntry(db, 'p1', TODAY, 'Words', { id: 'e1', now: T0 });
+  });
+
+  it('locks and unlocks without changing any timestamp', async () => {
+    const before = await getEntry(db, 'e1', T0);
+    await setEntryLocked(db, 'e1', true, T0 + 1000);
+    expect(await getEntry(db, 'e1', T0 + 1000)).toEqual({ ...before, locked: true });
+    await setEntryLocked(db, 'e1', false, T0 + 2000);
+    expect(await getEntry(db, 'e1', T0 + 2000)).toEqual(before);
+  });
+
+  it('refuses to lock a faded entry but still unlocks one', async () => {
+    await setEntryLocked(db, 'e1', true, T0);
+    const expiry = T0 + RETENTION_MS;
+    await setEntryLocked(db, 'e1', false, expiry);
+    await expect(setEntryLocked(db, 'e1', true, expiry)).rejects.toBeInstanceOf(EntryValidationError);
+  });
+
+  it('Let Go deletes the entry and keeps the day\'s quick logs', async () => {
+    await saveQuickLogs(db, 'p1', TODAY, { ...NO_QUICK_LOGS, hadACry: true }, T0);
+    await letGoEntry(db, 'e1');
+    expect(await getEntry(db, 'e1', T0)).toBeNull();
+    expect((await getQuickLogs(db, 'p1', TODAY)).hadACry).toBe(true);
+  });
+
+  it('lists every entry of the profile, newest first', async () => {
+    await createEntry(db, 'p1', '2026-10-01', 'Older', { id: 'e0', now: T0 - 1000 });
+    await createEntry(db, 'p1', TODAY, 'Later today', { id: 'e2', now: T0 + 1000 });
+    expect((await listEntriesForProfile(db, 'p1', T0 + 1000)).map((e) => e.id)).toEqual(['e2', 'e1', 'e0']);
   });
 });

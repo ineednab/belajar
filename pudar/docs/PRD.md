@@ -564,8 +564,8 @@ Work runs in this order; each step is reviewed against nabila's mockups before t
 | 3 | Several entries per day: migration 2, repository, Today list (D5) | Done in PR #3 |
 | 4 | Automatic drafts (D21) and the "Hari ini" button | Done in PR #3 |
 | 5 | Fading engine and purge (Epic 3) | Done in PR #3 |
-| 6 | Memory timeline and entry detail (Epic 6) | Next mockup screens |
-| 7 | Lock, Unlock and Let Go (Epic 5) | Lives on entry detail |
+| 6 | Memory timeline and entry detail (Epic 6) | Done in PR #3 (calendar view still P1) |
+| 7 | Lock, Unlock and Let Go (Epic 5) | Done in PR #3 |
 | 8 | Lainnya quick logs (D22) | Needs nabila's final list and a mockup |
 | 9 | Closing and reopening a Pudar (D23) | Needs a mockup and Q7 |
 | 10 | Settings and privacy, Delete all data (Epic 7) | |

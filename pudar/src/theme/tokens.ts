@@ -24,6 +24,10 @@ export const colors = {
   onPrimaryInk: '#FFFFFF',
   /** "Chose myself" icon on `selfGreenBg`. */
   selfGreenInk: '#567F63',
+  /** Status pills: "Baru" on roseBg, "Pudar dalam N hari" / "Hampir pudar" on peachBg. */
+  roseBg: '#FCEEEE',
+  peachBg: '#FBE7DA',
+  peachInk: '#8A4B22',
   /** Errors and destructive actions. */
   dangerInk: '#B3261E',
   border: '#EFE4E0',

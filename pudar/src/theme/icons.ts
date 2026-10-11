@@ -19,6 +19,9 @@ export const ICONS = {
   check: { sf: 'checkmark', fallback: 'check' },
   checkCircle: { sf: 'checkmark.circle.fill', fallback: 'check-circle' },
   chevronDown: { sf: 'chevron.down', fallback: 'chevron-down' },
+  chevronRight: { sf: 'chevron.right', fallback: 'chevron-right' },
   lock: { sf: 'lock', fallback: 'lock-outline' },
+  lockOpen: { sf: 'lock.open', fallback: 'lock-open-variant-outline' },
+  letGo: { sf: 'wind', fallback: 'weather-windy' },
   plus: { sf: 'plus', fallback: 'plus' },
 } as const satisfies Record<string, IconSpec>;

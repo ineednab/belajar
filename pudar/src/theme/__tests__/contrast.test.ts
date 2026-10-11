@@ -15,6 +15,10 @@ describe('Blush Peach contrast (WCAG AA)', () => {
     ['primaryInk on background', colors.primaryInk, colors.background],
     ['button label on primaryInk', colors.onPrimaryInk, colors.primaryInk],
     ['dangerInk on background', colors.dangerInk, colors.background],
+    ['button label on dangerInk', colors.onPrimaryInk, colors.dangerInk],
+    ['rose pill', colors.primaryInk, colors.roseBg],
+    ['peach pill', colors.peachInk, colors.peachBg],
+    ['neutral pill', colors.text, colors.neutralBg],
   ])('%s ≥ 4.5:1', (_, foreground, background) => {
     expect(contrastRatio(foreground, background)).toBeGreaterThanOrEqual(TEXT_AA);
   });

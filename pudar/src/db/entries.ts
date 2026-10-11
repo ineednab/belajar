@@ -165,3 +165,37 @@ export async function updateEntry(
   await db.runAsync('UPDATE journal_entries SET content = ?, updated_at = ? WHERE id = ?', content, now, id);
   return { ...existing, content, updatedAt: now };
 }
+
+/** Every entry of the profile, newest first. Content is already null for faded entries. */
+export async function listEntriesForProfile(
+  db: Db,
+  profileId: string,
+  now: number,
+): Promise<JournalEntry[]> {
+  const rows = await db.getAllAsync<EntryRow>(
+    `SELECT ${COLUMNS} FROM journal_entries WHERE profile_id = ?
+     ORDER BY date DESC, created_at DESC, id DESC`,
+    profileId,
+  );
+  return rows.map((row) => toEntry(row, now));
+}
+
+/**
+ * Lock hides the text everywhere; fading carries on (PRD D8). Never touches a timestamp. A faded
+ * entry can't be locked, since there is no text left to hide.
+ */
+export async function setEntryLocked(db: Db, id: string, locked: boolean, now: number): Promise<void> {
+  const existing = await getEntry(db, id, now);
+  if (!existing) {
+    throw new EntryValidationError('Tulisan ini sudah tidak ada.');
+  }
+  if (locked && isFaded(existing)) {
+    throw new EntryValidationError('Tulisan yang sudah memudar tidak bisa dikunci.');
+  }
+  await db.runAsync('UPDATE journal_entries SET locked = ? WHERE id = ?', locked ? 1 : 0, id);
+}
+
+/** Let Go: deletes the entry for good. The day's quick logs stay (PRD D9). */
+export async function letGoEntry(db: Db, id: string): Promise<void> {
+  await db.runAsync('DELETE FROM journal_entries WHERE id = ?', id);
+}

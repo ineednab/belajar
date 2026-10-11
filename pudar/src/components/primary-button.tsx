@@ -1,18 +1,28 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+
+import type { IconSpec } from '@/theme/icons';
 
 import { fonts } from '@/theme/typography';
 import { colors, radii, spacing } from '@/theme/tokens';
 
 import { AppText } from './app-text';
+import { Icon } from './icon';
 
 export function PrimaryButton({
   label,
   onPress,
   disabled = false,
+  destructive = false,
+  icon,
+  style,
 }: {
   label: string;
   onPress: () => void;
   disabled?: boolean;
+  /** Red, for actions that can't be undone (Let Go's confirmation). */
+  destructive?: boolean;
+  icon?: IconSpec;
+  style?: StyleProp<ViewStyle>;
 }) {
   return (
     <Pressable
@@ -22,9 +32,12 @@ export function PrimaryButton({
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
+        destructive && styles.destructive,
+        style,
         pressed && styles.pressed,
         disabled && styles.disabled,
       ]}>
+      {icon && <Icon icon={icon} size={18} color={colors.onPrimaryInk} />}
       <AppText style={styles.label}>{label}</AppText>
     </Pressable>
   );
@@ -37,6 +50,12 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  destructive: {
+    backgroundColor: colors.dangerInk,
   },
   pressed: {
     opacity: 0.85,

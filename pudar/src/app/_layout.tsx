@@ -67,6 +67,7 @@ export default function RootLayout() {
             />
             <Stack.Screen name="profile/new" options={{ title: 'Pudar baru', presentation: 'modal' }} />
             <Stack.Screen name="profile/[id]" options={{ title: 'Ubah Pudar', presentation: 'modal' }} />
+            <Stack.Screen name="entry/[id]" options={{ title: '', headerBackTitle: 'Kenangan' }} />
           </Stack>
         </ThemeProvider>
       </ProfilesProvider>
