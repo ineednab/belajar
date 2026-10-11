@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { Platform, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, spacing } from '@/theme/tokens';
@@ -24,7 +24,8 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
+    // On web the tabs float over the top of the page instead of sitting at the bottom.
+    paddingTop: Platform.OS === 'web' ? 88 : spacing.lg,
     paddingBottom: spacing.xxl,
     gap: spacing.md,
   },

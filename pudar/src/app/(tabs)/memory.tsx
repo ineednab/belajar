@@ -1,19 +1,24 @@
-import { AppText } from '@/components/app-text';
-import { Card } from '@/components/card';
-import { Screen } from '@/components/screen';
+import { router } from 'expo-router';
 
-// Placeholder until Epic 6 (Memory).
+import { EmptyState } from '@/components/empty-state';
+import { PrimaryButton } from '@/components/primary-button';
+import { ProfileSelector } from '@/components/profile-selector';
+import { Screen } from '@/components/screen';
+import { useProfiles } from '@/profiles/provider';
+
+// Empty state until Epic 6 (Memory) adds the timeline.
 export default function MemoryScreen() {
+  const { activeProfile } = useProfiles();
+
   return (
     <Screen>
-      <AppText variant="title" accessibilityRole="header">
-        Memory
-      </AppText>
-      <Card>
-        <AppText variant="caption">
-          Your past entries will appear here, slowly fading with time.
-        </AppText>
-      </Card>
+      {activeProfile && <ProfileSelector profile={activeProfile} />}
+      <EmptyState
+        icon="leaf"
+        title="Your memories will appear here, slowly fading with time."
+        body="Write your first entry to start building your timeline.">
+        <PrimaryButton label="Write your first entry" onPress={() => router.navigate('/')} />
+      </EmptyState>
     </Screen>
   );
 }

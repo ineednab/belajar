@@ -3,7 +3,8 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet } from 'react-native';
 
 import type { Profile } from '@/db/profiles';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { colors, spacing } from '@/theme/tokens';
+import { typography } from '@/theme/typography';
 
 import { AppText } from './app-text';
 import { ProfileAvatar } from './profile-avatar';
@@ -21,12 +22,12 @@ export function ProfileSelector({ profile }: { profile: Profile }) {
         name={profile.name}
         icon={profile.icon}
         accentColor={profile.accentColor}
-        size={28}
+        size={40}
       />
-      <AppText variant="label" numberOfLines={1} style={styles.label}>
+      <AppText numberOfLines={1} style={styles.label}>
         Pudar for {profile.name}
       </AppText>
-      <SymbolView name="chevron.down" size={12} tintColor={colors.mutedInk} />
+      <SymbolView name="chevron.down" size={14} tintColor={colors.primaryInk} />
     </Pressable>
   );
 }
@@ -37,16 +38,12 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.sm + 4,
     paddingVertical: spacing.xs,
-    paddingLeft: spacing.xs,
-    paddingRight: spacing.md,
-    borderRadius: radii.pill,
-    backgroundColor: colors.surface,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
   },
   label: {
+    ...typography.heading,
+    color: colors.primaryInk,
     flexShrink: 1,
   },
   pressed: {

@@ -1,0 +1,57 @@
+import { SymbolView, type SFSymbol } from 'expo-symbols';
+import { Pressable, StyleSheet } from 'react-native';
+
+import { fonts } from '@/theme/typography';
+import { colors, radii, spacing } from '@/theme/tokens';
+
+import { AppText } from './app-text';
+
+/** Outlined pill for secondary actions ("Set start date", "+ New Pudar"). */
+export function SecondaryButton({
+  label,
+  onPress,
+  icon,
+  compact = false,
+}: {
+  label: string;
+  onPress: () => void;
+  icon?: SFSymbol;
+  /** Hug the label instead of filling the row. */
+  compact?: boolean;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [styles.button, compact && styles.compact, pressed && styles.pressed]}>
+      {icon && <SymbolView name={icon} size={16} tintColor={colors.primaryInk} />}
+      <AppText style={styles.label}>{label}</AppText>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.sm + 4,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radii.pill,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    backgroundColor: colors.surface,
+  },
+  compact: {
+    alignSelf: 'center',
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+  label: {
+    fontFamily: fonts.sansSemiBold,
+    fontSize: 15,
+    color: colors.primaryInk,
+  },
+});

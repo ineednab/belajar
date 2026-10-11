@@ -4,9 +4,10 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { ProfileAvatar } from '@/components/profile-avatar';
+import { SecondaryButton } from '@/components/secondary-button';
 import { TextButton } from '@/components/profile-form';
 import { useProfiles } from '@/profiles/provider';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { colors, spacing } from '@/theme/tokens';
 
 /** Profile switcher sheet (PRD §6 Today: profile selector). */
 export default function ProfilesSheet() {
@@ -46,15 +47,9 @@ export default function ProfilesSheet() {
           </View>
         );
       })}
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => router.push('/profile/new')}
-        style={({ pressed }) => [styles.newButton, pressed && styles.pressed]}>
-        <SymbolView name="plus" size={16} tintColor={colors.primaryInk} />
-        <AppText variant="label" style={styles.newLabel}>
-          New Pudar
-        </AppText>
-      </Pressable>
+      <View style={styles.newButton}>
+        <SecondaryButton label="New Pudar" icon="plus" onPress={() => router.push('/profile/new')} />
+      </View>
     </ScrollView>
   );
 }
@@ -83,17 +78,6 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   newButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
     marginTop: spacing.md,
-    paddingVertical: spacing.md,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.primaryInk,
-  },
-  newLabel: {
-    color: colors.primaryInk,
   },
 });
