@@ -1,14 +1,14 @@
 import { useFonts } from 'expo-font';
-import { DefaultTheme, ThemeProvider } from 'expo-router';
+import { DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
-import { AppTabs } from '@/components/app-tabs';
 import { StartupError } from '@/components/startup-error';
 import { DatabaseProvider, useOpenDatabase } from '@/db/provider';
+import { ProfilesProvider } from '@/profiles/provider';
 import { colors } from '@/theme/tokens';
-import { fontAssets } from '@/theme/typography';
+import { fontAssets, fonts } from '@/theme/typography';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -44,10 +44,32 @@ export default function RootLayout() {
   }
   return (
     <DatabaseProvider value={{ db: database.db, encrypted: database.encrypted }}>
-      <ThemeProvider value={navigationTheme}>
-        <StatusBar style="dark" />
-        <AppTabs />
-      </ThemeProvider>
+      <ProfilesProvider>
+        <ThemeProvider value={navigationTheme}>
+          <StatusBar style="dark" />
+          <Stack
+            screenOptions={{
+              contentStyle: { backgroundColor: colors.background },
+              headerStyle: { backgroundColor: colors.background },
+              headerShadowVisible: false,
+              headerTintColor: colors.primaryInk,
+              headerTitleStyle: { fontFamily: fonts.serif, color: colors.text },
+            }}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="profiles"
+              options={{
+                title: 'Your Pudars',
+                presentation: 'formSheet',
+                sheetAllowedDetents: [0.5, 1],
+                sheetGrabberVisible: true,
+              }}
+            />
+            <Stack.Screen name="profile/new" options={{ title: 'New Pudar', presentation: 'modal' }} />
+            <Stack.Screen name="profile/[id]" options={{ title: 'Edit Pudar', presentation: 'modal' }} />
+          </Stack>
+        </ThemeProvider>
+      </ProfilesProvider>
     </DatabaseProvider>
   );
 }

@@ -130,8 +130,11 @@ Wording rule: **"Pudar"** = a profile/space ("+ New Pudar", "Pudar for V"). **"E
 
 ### P0 — Profiles
 
-- Create a profile with a name or nickname (1–30 characters, trimmed).
-- Optional icon (from a fixed set) and accent color (from a fixed palette). Accent color only tints the profile chip and selector, not the whole theme.
+- Create a profile with a name or nickname (1–30 characters, trimmed; counted as characters, so an emoji counts once). A newly created Pudar becomes the active one.
+- Optional icon and accent color. Accent color only tints the profile avatar, not the whole theme.
+  - Icons (SF Symbols): moon, heart, leaf, cloud, star, sparkles, drop, bird.
+  - Colors: Rose `#D97C8B`, Peach `#E8A77E`, Sand `#D4B48A`, Sage `#9DBF9E`, Sky `#8DB4D6`, Lavender `#B7A6DB`. The avatar's icon or initial is drawn in `text` on the color (≥ 3:1, tested).
+  - Without an icon, the avatar shows the name's first letter.
 - Optional no-contact start date. It cannot be in the future.
 - Switch, rename, edit, and delete profiles.
 - The active profile is persisted and restored on launch.
@@ -543,7 +546,13 @@ Done when:
 
 ### Epic 2 — Profiles
 - Profile repository (CRUD, cascade delete), active-profile persistence, profile switcher sheet, create/edit form, delete confirmation, "Start again from today".
-- Done when: profiles can be created, switched, edited and deleted. Deleting one removes its day records and entries (tested at the database level). The active profile survives restart.
+- "Start again from today" lives on the Edit Pudar screen until Epic 4 adds the counter's menu.
+
+Done when:
+- [x] Profiles can be created, switched, edited and deleted (repository tests).
+- [x] Deleting a profile removes its own day records and entries, and no one else's (tested at the database level).
+- [x] The active profile survives restart; if it was deleted, the oldest remaining profile is used, and with none left the app returns to "Create your first Pudar" (tested).
+- [ ] Walk through the flow on a device or in Expo Go: create → switch → edit → start again → delete the last one. *(needs a phone or Mac)*
 
 ### Epic 3 — Fading engine
 - `getFadeState`, `purgeExpired`, and purge on launch and foreground.
@@ -613,7 +622,6 @@ Do not optimize for streak length, frequency of thinking about someone, or daily
 | # | Question | Recommendation | Needed by |
 |---|---|---|---|
 | Q3 | Final app name "Pudar" — App Store availability | Check before Epic 9 | Epic 9 |
-| Q4 | Icon set and accent palette for profiles | 8 icons, 6 colors | Epic 2 |
 | Q5 | Support resource link and copy reviewed by someone with mental-health background | Yes | Epic 7 |
 | Q6 | Button style: deeper `primaryInk` fill with white text (current), or `primary` fill with large bold dark text | `primaryInk` | Epic 4 |
 

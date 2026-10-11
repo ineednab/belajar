@@ -24,6 +24,8 @@ export const colors = {
   onPrimaryInk: '#FFFFFF',
   /** "Chose myself" icon on `selfGreenBg`. */
   selfGreenInk: '#567F63',
+  /** Errors and destructive actions. */
+  dangerInk: '#B3261E',
   border: '#EFE4E0',
 } as const;
 

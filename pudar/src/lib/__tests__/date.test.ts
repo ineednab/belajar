@@ -3,6 +3,7 @@ import {
   compareLocalDates,
   diffCalendarDays,
   isValidLocalDate,
+  localDateToDate,
   noContactDays,
   toLocalDate,
   todayLocal,
@@ -203,5 +204,18 @@ describe('noContactDays', () => {
 
   it('treats a future start date as 0', () => {
     expect(noContactDays('2026-10-12', '2026-10-11')).toBe(0);
+  });
+});
+
+describe('localDateToDate', () => {
+  it('round-trips through toLocalDate for every day of a year (DST included)', () => {
+    for (let n = 0; n < 366; n++) {
+      const date = addDays('2026-01-01', n);
+      expect(toLocalDate(localDateToDate(date))).toBe(date);
+    }
+  });
+
+  it('rejects invalid dates', () => {
+    expect(() => localDateToDate('2026-02-30')).toThrow(RangeError);
   });
 });

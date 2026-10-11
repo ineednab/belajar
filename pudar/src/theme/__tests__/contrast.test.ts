@@ -1,4 +1,5 @@
 import { contrastRatio } from '../contrast';
+import { PROFILE_COLORS } from '../profile-style';
 import { colors } from '../tokens';
 
 const TEXT_AA = 4.5;
@@ -13,6 +14,7 @@ describe('Blush Peach contrast (WCAG AA)', () => {
     ['mutedInk on surface', colors.mutedInk, colors.surface],
     ['primaryInk on background', colors.primaryInk, colors.background],
     ['button label on primaryInk', colors.onPrimaryInk, colors.primaryInk],
+    ['dangerInk on background', colors.dangerInk, colors.background],
   ])('%s ≥ 4.5:1', (_, foreground, background) => {
     expect(contrastRatio(foreground, background)).toBeGreaterThanOrEqual(TEXT_AA);
   });
@@ -23,6 +25,13 @@ describe('Blush Peach contrast (WCAG AA)', () => {
   ])('%s ≥ 3:1', (_, foreground, background) => {
     expect(contrastRatio(foreground, background)).toBeGreaterThanOrEqual(NON_TEXT_AA);
   });
+
+  it.each(PROFILE_COLORS.map((c) => [c.label, c.hex]))(
+    'profile avatar icon on %s ≥ 3:1',
+    (_, hex) => {
+      expect(contrastRatio(colors.text, hex)).toBeGreaterThanOrEqual(NON_TEXT_AA);
+    },
+  );
 
   it('matches known reference values', () => {
     expect(contrastRatio('#000000', '#FFFFFF')).toBeCloseTo(21, 5);
