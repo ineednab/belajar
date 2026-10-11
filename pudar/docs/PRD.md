@@ -563,7 +563,7 @@ Work runs in this order; each step is reviewed against nabila's mockups before t
 | 2 | Bahasa Indonesia for all existing copy (D20) | Done in PR #3 |
 | 3 | Several entries per day: migration 2, repository, Today list (D5) | Done in PR #3 |
 | 4 | Automatic drafts (D21) and the "Hari ini" button | Done in PR #3 |
-| 5 | Fading engine and purge (Epic 3) | Memory needs real statuses |
+| 5 | Fading engine and purge (Epic 3) | Done in PR #3 |
 | 6 | Memory timeline and entry detail (Epic 6) | Next mockup screens |
 | 7 | Lock, Unlock and Let Go (Epic 5) | Lives on entry detail |
 | 8 | Lainnya quick logs (D22) | Needs nabila's final list and a mockup |

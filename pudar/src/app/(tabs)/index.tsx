@@ -63,7 +63,7 @@ export default function TodayScreen() {
 
 /** Today screen for one profile (PRD §6 Today). */
 function Day({ profile }: { profile: Profile }) {
-  const { db } = useDatabase();
+  const { db, purgeVersion } = useDatabase();
   const today = useLocalToday();
   const [selected, setSelected] = useState(today);
   // The date the editor opened on. It stays writable after midnight until the draft is settled.
@@ -165,7 +165,7 @@ function Day({ profile }: { profile: Profile }) {
     return () => {
       cancelled = true;
     };
-  }, [db, profile.id, selected]);
+  }, [db, profile.id, selected, purgeVersion]);
 
   useEffect(() => {
     let cancelled = false;
@@ -175,7 +175,7 @@ function Day({ profile }: { profile: Profile }) {
     return () => {
       cancelled = true;
     };
-  }, [db, profile.id, writableDate]);
+  }, [db, profile.id, writableDate, purgeVersion]);
 
   const [marksVersion, setMarksVersion] = useState(0);
   useEffect(() => {
@@ -187,7 +187,7 @@ function Day({ profile }: { profile: Profile }) {
     return () => {
       cancelled = true;
     };
-  }, [db, profile.id, week, marksVersion]);
+  }, [db, profile.id, week, marksVersion, purgeVersion]);
   const onWeekChange = useCallback((from: LocalDate, to: LocalDate) => {
     setWeek((current) => (current?.from === from && current.to === to ? current : { from, to }));
   }, []);
