@@ -1,0 +1,80 @@
+import {
+  applyKey,
+  configureConnection,
+  getCipherVersion,
+  isNotADatabaseError,
+  verifyReadable,
+} from './connection';
+import { migrate } from './migrations';
+import type { Db } from './types';
+
+export type DatabaseOpenDeps = {
+  readKey(): Promise<string | null>;
+  generateKey(): Promise<string>;
+  storeKey(key: string): Promise<void>;
+  openDatabase(): Promise<Db>;
+  deleteDatabase(): Promise<void>;
+  /** Refuse to open without SQLCipher. True in production builds. */
+  requireEncryption: boolean;
+  warn(message: string): void;
+};
+
+export type OpenedDatabase = {
+  db: Db;
+  encrypted: boolean;
+  /**
+   * True when an existing database file could not be read with a freshly created key and was
+   * replaced (PRD §9.3: restored from a backup that did not include the keychain).
+   */
+  resetUnreadable: boolean;
+};
+
+/**
+ * Opens the journal database: key → unlock → encryption check → pragmas → migrations.
+ *
+ * Data is only ever discarded when the keychain had *no* key and the file can't be read with the
+ * new one. If a key exists and doesn't work, or the keychain itself fails, the error propagates
+ * and nothing is deleted.
+ */
+export async function openEncryptedDatabase(deps: DatabaseOpenDeps): Promise<OpenedDatabase> {
+  let key = await deps.readKey();
+  const keyIsNew = key === null;
+  if (key === null) {
+    key = await deps.generateKey();
+    // Store before the database file exists, so a crash can't leave a file with no key.
+    await deps.storeKey(key);
+  }
+
+  let resetUnreadable = false;
+  let db = await deps.openDatabase();
+  try {
+    await unlock(db, key);
+  } catch (error) {
+    await db.closeAsync();
+    if (!keyIsNew || !isNotADatabaseError(error)) {
+      throw error;
+    }
+    await deps.deleteDatabase();
+    db = await deps.openDatabase();
+    await unlock(db, key);
+    resetUnreadable = true;
+  }
+
+  const cipherVersion = await getCipherVersion(db);
+  if (cipherVersion === null) {
+    if (deps.requireEncryption) {
+      await db.closeAsync();
+      throw new Error('SQLCipher is not available. Refusing to store journal data unencrypted.');
+    }
+    deps.warn('Pudar database is NOT encrypted (SQLCipher unavailable). Development only.');
+  }
+
+  await configureConnection(db);
+  await migrate(db);
+  return { db, encrypted: cipherVersion !== null, resetUnreadable };
+}
+
+async function unlock(db: Db, key: string): Promise<void> {
+  await applyKey(db, key);
+  await verifyReadable(db);
+}

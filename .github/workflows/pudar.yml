@@ -1,0 +1,29 @@
+name: Pudar
+
+on:
+  pull_request:
+    paths:
+      - 'pudar/**'
+      - '.github/workflows/pudar.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'pudar/**'
+      - '.github/workflows/pudar.yml'
+
+jobs:
+  check:
+    name: Typecheck, lint, tests, timezone matrix
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pudar
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: pudar/package-lock.json
+      - run: npm ci
+      - run: npm run check
