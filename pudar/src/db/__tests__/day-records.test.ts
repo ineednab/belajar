@@ -30,17 +30,26 @@ describe('day records repository', () => {
 
   it('saves and updates the day in place', async () => {
     await saveQuickLogs(db, 'p1', TODAY, { ...NO_QUICK_LOGS, choseMyself: true }, T0);
-    await saveQuickLogs(db, 'p1', TODAY, { thoughtOfThem: true, hadACry: false, choseMyself: true }, T0 + 1);
+    await saveQuickLogs(db, 'p1', TODAY, { ...NO_QUICK_LOGS, thoughtOfThem: true, choseMyself: true }, T0 + 1);
 
     expect(await getQuickLogs(db, 'p1', TODAY)).toEqual({
+      ...NO_QUICK_LOGS,
       thoughtOfThem: true,
-      hadACry: false,
       choseMyself: true,
     });
     expect(await rows(db)).toBe(1);
   });
 
-  it('deletes the row when all three are turned off', async () => {
+  it('stores the Lainnya logs like the main three', async () => {
+    await saveQuickLogs(db, 'p1', TODAY, { ...NO_QUICK_LOGS, wantedToChat: true, sleptWell: true }, T0);
+    expect(await getQuickLogs(db, 'p1', TODAY)).toEqual({ ...NO_QUICK_LOGS, wantedToChat: true, sleptWell: true });
+
+    await saveQuickLogs(db, 'p1', TODAY, { ...NO_QUICK_LOGS, sleptWell: true }, T0 + 1);
+    expect((await getQuickLogs(db, 'p1', TODAY)).wantedToChat).toBe(false);
+    expect(await rows(db)).toBe(1);
+  });
+
+  it('deletes the row when every log is turned off', async () => {
     await saveQuickLogs(db, 'p1', TODAY, { ...NO_QUICK_LOGS, hadACry: true }, T0);
     await saveQuickLogs(db, 'p1', TODAY, NO_QUICK_LOGS, T0 + 1);
     expect(await rows(db)).toBe(0);

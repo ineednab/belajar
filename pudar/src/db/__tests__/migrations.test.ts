@@ -81,7 +81,25 @@ describe('migrate', () => {
     expect(await count(db, 'journal_entries')).toBe(0);
   });
 
-  it('is a no-op on an up-to-date database', async () => {
+  it('keeps day records when adding the Lainnya columns (v4)', async () => {
+    const db = await createTestDb();
+    await configureConnection(db);
+    for (const sql of MIGRATIONS.slice(0, 3)) await db.execAsync(sql);
+    await db.execAsync('PRAGMA user_version = 3');
+    await insertProfile(db);
+    await db.runAsync(
+      "INSERT INTO day_records (profile_id, date, had_a_cry, updated_at) VALUES ('p1', '2026-10-11', 1, ?)",
+      NOW,
+    );
+
+    expect(await migrate(db)).toEqual({ from: 3, to: SCHEMA_VERSION });
+    const row = await db.getFirstAsync<{ had_a_cry: number; wanted_to_chat: number }>(
+      'SELECT had_a_cry, wanted_to_chat FROM day_records',
+    );
+    expect(row).toEqual({ had_a_cry: 1, wanted_to_chat: 0 });
+  });
+
+    it('is a no-op on an up-to-date database', async () => {
     const db = await freshDb();
     await insertProfile(db);
     expect(await migrate(db)).toEqual({ from: SCHEMA_VERSION, to: SCHEMA_VERSION });

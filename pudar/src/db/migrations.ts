@@ -88,6 +88,16 @@ export const MIGRATIONS: readonly string[] = [
     updated_at  INTEGER NOT NULL
   );
   `,
+
+  // v3 → v4: the six "Lainnya" quick logs (PRD D22), stored like the main three.
+  `
+  ALTER TABLE day_records ADD COLUMN wanted_to_chat  INTEGER NOT NULL DEFAULT 0 CHECK (wanted_to_chat IN (0, 1));
+  ALTER TABLE day_records ADD COLUMN checked_socials INTEGER NOT NULL DEFAULT 0 CHECK (checked_socials IN (0, 1));
+  ALTER TABLE day_records ADD COLUMN missed_them     INTEGER NOT NULL DEFAULT 0 CHECK (missed_them IN (0, 1));
+  ALTER TABLE day_records ADD COLUMN felt_angry      INTEGER NOT NULL DEFAULT 0 CHECK (felt_angry IN (0, 1));
+  ALTER TABLE day_records ADD COLUMN felt_relieved   INTEGER NOT NULL DEFAULT 0 CHECK (felt_relieved IN (0, 1));
+  ALTER TABLE day_records ADD COLUMN slept_well      INTEGER NOT NULL DEFAULT 0 CHECK (slept_well IN (0, 1));
+  `,
 ];
 
 export const SCHEMA_VERSION = MIGRATIONS.length;

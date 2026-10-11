@@ -7,7 +7,7 @@ import { ConfirmDialog } from '@/components/confirm-dialog';
 import { formatEntryTime } from '@/components/entry-list';
 import { Icon } from '@/components/icon';
 import { PrimaryButton } from '@/components/primary-button';
-import { QuickLogIcons } from '@/components/quick-logs';
+import { MoreQuickLogChips, QuickLogIcons } from '@/components/quick-logs';
 import { SecondaryButton } from '@/components/secondary-button';
 import { StatusPill } from '@/components/status-pill';
 import { getQuickLogs, type QuickLogs } from '@/db/day-records';
@@ -84,6 +84,7 @@ export default function EntryDetailScreen() {
           <StatusPill text={label.text} tone={label.tone} />
           {entry.locked && <Icon icon={ICONS.lock} size={16} color={colors.mutedInk} />}
         </View>
+        <MoreQuickLogChips value={quickLogs} align="start" />
         <AppText variant="caption">Ditulis pukul {formatEntryTime(entry.createdAt)}</AppText>
 
         {faded ? (

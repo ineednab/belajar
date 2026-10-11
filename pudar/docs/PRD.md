@@ -566,7 +566,7 @@ Work runs in this order; each step is reviewed against nabila's mockups before t
 | 5 | Fading engine and purge (Epic 3) | Done in PR #3 |
 | 6 | Memory timeline and entry detail (Epic 6) | Done in PR #3 (calendar view still P1) |
 | 7 | Lock, Unlock and Let Go (Epic 5) | Done in PR #3 |
-| 8 | Lainnya quick logs (D22) | Needs nabila's final list and a mockup |
+| 8 | Lainnya quick logs (D22) | Done in PR #3 with the proposed list; final list still Q8 |
 | 9 | Closing and reopening a Pudar (D23) | Needs a mockup and Q7 |
 | 10 | Settings and privacy, Delete all data (Epic 7) | |
 | 11 | Dark mode | All screens exist, so every color is known |
@@ -684,7 +684,7 @@ Do not optimize for streak length, frequency of thinking about someone, or daily
 | Q5 | Support resource link and copy reviewed by someone with mental-health background | Yes | Epic 7 |
 | Q6 | Button style: deeper `primaryInk` fill with white text (current), or `primary` fill with large bold dark text | `primaryInk` | Epic 4 |
 | Q7 | Show how many times a closed Pudar was reopened? A visible count can feel like a score, which §3 avoids | Store it; show only on the closed Pudar as neutral text ("Dibuka lagi 2 kali"), never as a trend | Step 9 |
-| Q8 | Final list of "Lainnya" quick logs (up to six) | The six proposed in §5 v1.3 additions | Step 8 |
+| Q8 | Final list of "Lainnya" quick logs (up to six) | Built with the six proposed (Ingin chat dia, Lihat media sosialnya, Kangen, Marah, Merasa lega, Tidur nyenyak; migration 4); renaming a label later needs no migration | Step 8 |
 
 ---
 
