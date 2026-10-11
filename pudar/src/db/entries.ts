@@ -1,6 +1,7 @@
 import type { LocalDate } from '@/lib/date';
 import { MAX_ENTRY_LENGTH, retentionExpiresAt } from '@/lib/fading';
 
+import { assertProfileOpen } from './profiles';
 import type { Db } from './types';
 
 export type JournalEntry = {
@@ -120,6 +121,7 @@ export async function createEntry(
   context: { id: string; now: number },
 ): Promise<JournalEntry> {
   validateContent(content);
+  await assertProfileOpen(db, profileId);
   const entry: JournalEntry = {
     id: context.id,
     profileId,
@@ -162,6 +164,7 @@ export async function updateEntry(
   if (isFaded(existing)) {
     throw new EntryValidationError('Tulisan ini sudah memudar.');
   }
+  await assertProfileOpen(db, existing.profileId);
   await db.runAsync('UPDATE journal_entries SET content = ?, updated_at = ? WHERE id = ?', content, now, id);
   return { ...existing, content, updatedAt: now };
 }

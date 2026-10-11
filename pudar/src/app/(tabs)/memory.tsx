@@ -7,9 +7,11 @@ import { EmptyState } from '@/components/empty-state';
 import { PrimaryButton } from '@/components/primary-button';
 import { ProfileSelector } from '@/components/profile-selector';
 import { Screen } from '@/components/screen';
+import { StatusPill } from '@/components/status-pill';
 import { TimelineCard } from '@/components/timeline-card';
 import { listQuickLogs, type QuickLogs } from '@/db/day-records';
 import { listEntriesForProfile, type JournalEntry } from '@/db/entries';
+import { isClosed } from '@/db/profiles';
 import { useDatabase } from '@/db/provider';
 import { useLocalToday } from '@/hooks/use-local-today';
 import { localDateToDate, type LocalDate } from '@/lib/date';
@@ -64,7 +66,9 @@ export default function MemoryScreen() {
           icon={ICONS.leaf}
           title="Kenanganmu akan muncul di sini, perlahan memudar seiring waktu."
           body="Tulis tulisan pertamamu untuk mulai mengisi linimasa.">
-          <PrimaryButton label="Mulai menulis" onPress={() => router.navigate('/')} />
+          {!isClosed(activeProfile) && (
+            <PrimaryButton label="Mulai menulis" onPress={() => router.navigate('/')} />
+          )}
         </EmptyState>
       </Screen>
     );
@@ -73,6 +77,7 @@ export default function MemoryScreen() {
   return (
     <Screen>
       <ProfileSelector profile={activeProfile} />
+      {isClosed(activeProfile) && <StatusPill text="Selesai" tone="neutral" />}
       {timeline &&
         groupByMonth(timeline.entries).map(({ month, entries }) => (
           <View key={month} style={styles.month}>

@@ -98,6 +98,14 @@ export const MIGRATIONS: readonly string[] = [
   ALTER TABLE day_records ADD COLUMN felt_relieved   INTEGER NOT NULL DEFAULT 0 CHECK (felt_relieved IN (0, 1));
   ALTER TABLE day_records ADD COLUMN slept_well      INTEGER NOT NULL DEFAULT 0 CHECK (slept_well IN (0, 1));
   `,
+
+  // v4 → v5: closing and reopening a Pudar (PRD D23). closed_on is the local date it was closed,
+  // where the no-contact counter stops.
+  `
+  ALTER TABLE profiles ADD COLUMN closed_at    INTEGER;
+  ALTER TABLE profiles ADD COLUMN closed_on    TEXT;
+  ALTER TABLE profiles ADD COLUMN reopen_count INTEGER NOT NULL DEFAULT 0 CHECK (reopen_count >= 0);
+  `,
 ];
 
 export const SCHEMA_VERSION = MIGRATIONS.length;

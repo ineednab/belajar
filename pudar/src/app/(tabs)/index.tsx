@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, AppState, Pressable, StyleSheet, View, type TextInput } from 'react-native';
 
 import { AppText } from '@/components/app-text';
+import { ClosedBanner } from '@/components/closed-banner';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { EmptyState } from '@/components/empty-state';
 import { EntryList, formatEntryTime } from '@/components/entry-list';
 import { Icon } from '@/components/icon';
@@ -26,12 +28,13 @@ import {
   updateEntry,
   type JournalEntry,
 } from '@/db/entries';
-import type { Profile } from '@/db/profiles';
+import { isClosed, type Profile } from '@/db/profiles';
 import type { Db } from '@/db/types';
 import { useDatabase } from '@/db/provider';
 import { getSetting, setSetting } from '@/db/settings';
 import { useLocalToday } from '@/hooks/use-local-today';
 import { compareLocalDates, diffCalendarDays, weekStartsOnFromLocale, type LocalDate } from '@/lib/date';
+import { TextButton } from '@/components/profile-form';
 import { useProfiles } from '@/profiles/provider';
 import { ICONS } from '@/theme/icons';
 import { colors, radii, spacing } from '@/theme/tokens';
@@ -86,7 +89,11 @@ function Day({ profile }: { profile: Profile }) {
   const [showNotice, setShowNotice] = useState(false);
   const editorRef = useRef<TextInput>(null);
 
-  const writable = selected === writableDate;
+  // A closed Pudar is read-only history (PRD D23).
+  const closed = isClosed(profile);
+  const writable = !closed && selected === writableDate;
+  const { close } = useProfiles();
+  const [confirmClose, setConfirmClose] = useState(false);
   const editing = editingId === null ? null : (writableEntries.find((e) => e.id === editingId) ?? null);
   const baseline = editing?.content ?? '';
   const dirty = draftReady && draft !== baseline;
@@ -247,7 +254,10 @@ function Day({ profile }: { profile: Profile }) {
     setStripKey((n) => n + 1);
   };
   const start = profile.noContactStartDate;
-  const days = start && compareLocalDates(start, selected) <= 0 ? diffCalendarDays(start, selected) : null;
+  // Once closed, the counter stops on the day it was closed.
+  const counterDate =
+    profile.closedOn && compareLocalDates(profile.closedOn, selected) < 0 ? profile.closedOn : selected;
+  const days = start && compareLocalDates(start, counterDate) <= 0 ? diffCalendarDays(start, counterDate) : null;
   const canSave = dirty && draft.trim().length > 0;
 
   return (
@@ -275,7 +285,7 @@ function Day({ profile }: { profile: Profile }) {
         onWeekChange={onWeekChange}
       />
 
-      {start === null ? (
+      {start === null && !closed ? (
         <EmptyState
           icon={ICONS.leaf}
           title="Atur hari kamu memulai"
@@ -290,6 +300,8 @@ function Day({ profile }: { profile: Profile }) {
       ) : days !== null ? (
         <Counter days={days} />
       ) : null}
+
+      {closed && <ClosedBanner profile={profile} />}
 
       <AppText variant="heading" accessibilityRole="header" style={styles.sectionTitle}>
         {isToday || writable ? 'Apa yang kurasakan hari ini?' : 'Apa yang kurasakan hari itu?'}
@@ -352,7 +364,24 @@ function Day({ profile }: { profile: Profile }) {
         <PastDayCard date={selected} entries={entries} quickLogs={quickLogs} />
       )}
 
+      {!closed && (
+        <View style={styles.closeAction}>
+          <TextButton label="Aku sudah selesai dengan orang ini" onPress={() => setConfirmClose(true)} />
+        </View>
+      )}
+
       <RetentionNotice visible={showNotice} onAcknowledge={acknowledge} />
+      <ConfirmDialog
+        visible={confirmClose}
+        title={`Sudah selesai dengan ${profile.name}?`}
+        body="Pudar ini akan jadi riwayat yang hanya bisa dibaca: tidak ada tulisan atau catatan perasaan baru, dan hitungan harinya berhenti. Tulisan yang ada tetap memudar sesuai waktunya. Kamu bisa membukanya lagi kapan saja dari Ubah Pudar."
+        confirmLabel="Ya, aku sudah selesai"
+        onConfirm={async () => {
+          setConfirmClose(false);
+          await close(profile.id);
+        }}
+        onCancel={() => setConfirmClose(false)}
+      />
     </Screen>
   );
 }
@@ -448,6 +477,10 @@ const styles = StyleSheet.create({
   },
   note: {
     textAlign: 'center',
+  },
+  closeAction: {
+    alignItems: 'center',
+    marginTop: spacing.xl,
   },
   editingBar: {
     flexDirection: 'row',

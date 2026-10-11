@@ -1,5 +1,6 @@
 import type { LocalDate } from '@/lib/date';
 
+import { assertProfileOpen } from './profiles';
 import type { Db } from './types';
 
 /** The three main per-day check-ins (PRD §6 Quick logs). */
@@ -78,6 +79,7 @@ export async function saveQuickLogs(
   logs: QuickLogs,
   now: number,
 ): Promise<void> {
+  await assertProfileOpen(db, profileId);
   if (KEYS.every((key) => !logs[key])) {
     await db.runAsync('DELETE FROM day_records WHERE profile_id = ? AND date = ?', profileId, date);
     return;

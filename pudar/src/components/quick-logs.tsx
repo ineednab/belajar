@@ -1,58 +1,33 @@
-import { useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import type {
-  MORE_QUICK_LOG_KEYS,
-  QuickLogKey,
-  QuickLogs,
-} from "@/db/day-records";
-import { ICONS, type IconSpec } from "@/theme/icons";
-import { colors, spacing } from "@/theme/tokens";
-import { fonts } from "@/theme/typography";
+import type { MORE_QUICK_LOG_KEYS, QuickLogKey, QuickLogs } from '@/db/day-records';
+import { ICONS, type IconSpec } from '@/theme/icons';
+import { colors, spacing } from '@/theme/tokens';
+import { fonts } from '@/theme/typography';
 
-import { AppText } from "./app-text";
-import { Icon } from "./icon";
+import { AppText } from './app-text';
+import { Icon } from './icon';
 
 type Tone = { bg: string; ink: string; selectedBg: string };
 
-const NEUTRAL: Tone = {
-  bg: colors.neutralBg,
-  ink: colors.neutralIcon,
-  selectedBg: colors.neutralIcon,
-};
-const SELF: Tone = {
-  bg: colors.selfGreenBg,
-  ink: colors.selfGreenInk,
-  selectedBg: colors.selfGreenInk,
-};
+const NEUTRAL: Tone = { bg: colors.neutralBg, ink: colors.neutralIcon, selectedBg: colors.neutralIcon };
+const SELF: Tone = { bg: colors.selfGreenBg, ink: colors.selfGreenInk, selectedBg: colors.selfGreenInk };
 
-export const QUICK_LOGS: readonly {
-  key: QuickLogKey;
-  label: string;
-  icon: IconSpec;
-  tone: Tone;
-}[] = [
-  {
-    key: "thoughtOfThem",
-    label: "Memikirkannya",
-    icon: ICONS.brain,
-    tone: NEUTRAL,
-  },
-  { key: "hadACry", label: "Menangis", icon: ICONS.rain, tone: NEUTRAL },
-  { key: "choseMyself", label: "Memilih diriku", icon: ICONS.leaf, tone: SELF },
+export const QUICK_LOGS: readonly { key: QuickLogKey; label: string; icon: IconSpec; tone: Tone }[] = [
+  { key: 'thoughtOfThem', label: 'Memikirkannya', icon: ICONS.brain, tone: NEUTRAL },
+  { key: 'hadACry', label: 'Menangis', icon: ICONS.rain, tone: NEUTRAL },
+  { key: 'choseMyself', label: 'Memilih diriku', icon: ICONS.leaf, tone: SELF },
 ];
 
 /** Behind "Lainnya" (PRD D22). The list is nabila's call (open question Q8). */
-export const MORE_QUICK_LOGS: readonly {
-  key: (typeof MORE_QUICK_LOG_KEYS)[number];
-  label: string;
-}[] = [
-  { key: "wantedToChat", label: "Ingin chat dia" },
-  { key: "checkedSocials", label: "Lihat media sosialnya" },
-  { key: "missedThem", label: "Kangen" },
-  { key: "feltAngry", label: "Marah" },
-  { key: "feltRelieved", label: "Merasa lega" },
-  { key: "sleptWell", label: "Tidur nyenyak" },
+export const MORE_QUICK_LOGS: readonly { key: (typeof MORE_QUICK_LOG_KEYS)[number]; label: string }[] = [
+  { key: 'wantedToChat', label: 'Ingin chat dia' },
+  { key: 'checkedSocials', label: 'Lihat media sosialnya' },
+  { key: 'missedThem', label: 'Kangen' },
+  { key: 'feltAngry', label: 'Marah' },
+  { key: 'feltRelieved', label: 'Merasa lega' },
+  { key: 'sleptWell', label: 'Tidur nyenyak' },
 ];
 
 /**
@@ -83,28 +58,12 @@ export function QuickLogButtons({
               accessibilityRole="button"
               accessibilityLabel={label}
               accessibilityState={{ selected, disabled: readOnly }}
-              style={({ pressed }) => [styles.item, pressed && styles.pressed]}
-            >
-              <View
-                style={[
-                  styles.circle,
-                  { backgroundColor: selected ? tone.selectedBg : tone.bg },
-                ]}
-              >
-                <Icon
-                  icon={icon}
-                  size={34}
-                  color={selected ? colors.onPrimaryInk : tone.ink}
-                />
+              style={({ pressed }) => [styles.item, pressed && styles.pressed]}>
+              <View style={[styles.circle, { backgroundColor: selected ? tone.selectedBg : tone.bg }]}>
+                <Icon icon={icon} size={34} color={selected ? colors.onPrimaryInk : tone.ink} />
                 {selected && (
-                  <View
-                    style={[styles.badge, { backgroundColor: tone.selectedBg }]}
-                  >
-                    <Icon
-                      icon={ICONS.check}
-                      size={12}
-                      color={colors.onPrimaryInk}
-                    />
+                  <View style={[styles.badge, { backgroundColor: tone.selectedBg }]}>
+                    <Icon icon={ICONS.check} size={12} color={colors.onPrimaryInk} />
                   </View>
                 )}
               </View>
@@ -121,24 +80,12 @@ export function QuickLogButtons({
             onPress={() => setShowMore((open) => !open)}
             accessibilityRole="button"
             accessibilityState={{ expanded: showMore }}
-            accessibilityLabel={
-              moreOn > 0 ? `Lainnya, ${moreOn} dipilih` : "Lainnya"
-            }
+            accessibilityLabel={moreOn > 0 ? `Lainnya, ${moreOn} dipilih` : 'Lainnya'}
             hitSlop={8}
-            style={({ pressed }) => [
-              styles.moreToggle,
-              pressed && styles.pressed,
-            ]}
-          >
-            <AppText style={styles.moreToggleText}>
-              {moreOn > 0 ? `Lainnya · ${moreOn}` : "Lainnya"}
-            </AppText>
+            style={({ pressed }) => [styles.moreToggle, pressed && styles.pressed]}>
+            <AppText style={styles.moreToggleText}>{moreOn > 0 ? `Lainnya · ${moreOn}` : 'Lainnya'}</AppText>
             <View style={showMore && styles.flipped}>
-              <Icon
-                icon={ICONS.chevronDown}
-                size={14}
-                color={colors.primaryInk}
-              />
+              <Icon icon={ICONS.chevronDown} size={14} color={colors.primaryInk} />
             </View>
           </Pressable>
           {showMore && (
@@ -156,20 +103,9 @@ export function QuickLogButtons({
                       styles.chip,
                       selected && styles.chipOn,
                       pressed && styles.pressed,
-                    ]}
-                  >
-                    {selected && (
-                      <Icon
-                        icon={ICONS.check}
-                        size={14}
-                        color={colors.onPrimaryInk}
-                      />
-                    )}
-                    <AppText
-                      style={[styles.chipText, selected && styles.chipTextOn]}
-                    >
-                      {label}
-                    </AppText>
+                    ]}>
+                    {selected && <Icon icon={ICONS.check} size={14} color={colors.onPrimaryInk} />}
+                    <AppText style={[styles.chipText, selected && styles.chipTextOn]}>{label}</AppText>
                   </Pressable>
                 );
               })}
@@ -213,13 +149,9 @@ export function QuickLogIcons({ value }: { value: QuickLogs }) {
     <View
       style={styles.mini}
       accessible
-      accessibilityLabel={[...on, ...more].map(({ label }) => label).join(", ")}
-    >
+      accessibilityLabel={[...on, ...more].map(({ label }) => label).join(', ')}>
       {on.map(({ key, icon, tone }) => (
-        <View
-          key={key}
-          style={[styles.miniCircle, { backgroundColor: tone.bg }]}
-        >
+        <View key={key} style={[styles.miniCircle, { backgroundColor: tone.bg }]}>
           <Icon icon={icon} size={16} color={tone.ink} />
         </View>
       ))}
@@ -237,11 +169,11 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   row: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   item: {
-    alignItems: "center",
+    alignItems: 'center',
     gap: spacing.sm,
     width: 112,
   },
@@ -252,11 +184,11 @@ const styles = StyleSheet.create({
     width: 84,
     height: 84,
     borderRadius: 42,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   badge: {
-    position: "absolute",
+    position: 'absolute',
     top: -2,
     right: -2,
     width: 24,
@@ -264,20 +196,20 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 2,
     borderColor: colors.background,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   label: {
     fontFamily: fonts.sans,
     fontSize: 14,
     lineHeight: 19,
     color: colors.text,
-    textAlign: "center",
+    textAlign: 'center',
   },
   moreToggle: {
-    alignSelf: "center",
-    flexDirection: "row",
-    alignItems: "center",
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.xs,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
@@ -289,20 +221,20 @@ const styles = StyleSheet.create({
     color: colors.primaryInk,
   },
   flipped: {
-    transform: [{ rotate: "180deg" }],
+    transform: [{ rotate: '180deg' }],
   },
   chips: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
     gap: spacing.sm,
   },
   chipsStart: {
     justifyContent: 'flex-start',
   },
   chip: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.xs,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
@@ -340,14 +272,14 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   mini: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: spacing.sm,
   },
   miniCircle: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

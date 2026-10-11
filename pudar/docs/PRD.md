@@ -150,7 +150,7 @@ Wording rule: **"Pudar"** = a profile/space ("+ Pudar baru", "Pudar untuk V"). *
 
 **Lainnya (more quick logs).** A "Lainnya" button sits under the three main quick logs and opens a sheet of extra toggles. Proposed set, to be confirmed by nabila: Ingin chat dia, Lihat media sosialnya, Kangen, Marah, Merasa lega, Tidur nyenyak. Toggles that are on also appear as small chips under the main row. "Ingin chat dia" also focuses the editor with the placeholder "Tulis di sini saja, bukan ke dia." Same rules as the main three: saved on tap, no counts or scores.
 
-**Closing a Pudar.** At the very bottom of Today, a quiet text button "Aku sudah selesai dengan orang ini" opens a gentle confirmation. A closed Pudar shows a "Selesai" label, its frozen counter, and its history read-only on Today and Memory. "Buka lagi" (on Edit Pudar) asks for confirmation and increments `reopenCount`. Whether and how `reopenCount` is shown is open (Q7). Closed Pudars stay in the switcher under "Sudah selesai" and can still be deleted.
+**Closing a Pudar.** At the very bottom of Today, a quiet text button "Aku sudah selesai dengan orang ini" opens a gentle confirmation. A closed Pudar shows a "Selesai" label, its frozen counter, and its history read-only on Today and Memory. "Buka lagi" (on Edit Pudar) asks for confirmation and increments `reopenCount`. Built with the Q7 default: `reopenCount` shows only as neutral text ("Dibuka lagi 2 kali") on the closed Pudar's banner and on Edit Pudar, never as a trend. Closed Pudars stay in the switcher under "Sudah selesai" and can still be deleted. Locking and Let Go still work on a closed Pudar's entries, since they only hide or erase. An unsaved draft is kept and comes back on reopen (or fades after 30 days).
 
 **Dark mode.** Every color token gets a dark value; the contrast test covers both sets. The app follows the system appearance.
 
@@ -371,7 +371,7 @@ type JournalEntry = {
 
 `retentionExpiresAt` is stored, not recomputed, so a future change to the retention period never retroactively changes existing entries. `fadedAt` records when the purge actually ran (which can be later than `retentionExpiresAt` if the app was not opened). It is used for debugging and the "faded" label, never for computing status.
 
-### SQLite schema (after migration 3)
+### SQLite schema (after migration 5)
 
 ```sql
 CREATE TABLE profiles (
@@ -381,7 +381,11 @@ CREATE TABLE profiles (
   accent_color           TEXT,
   no_contact_start_date  TEXT,
   created_at             INTEGER NOT NULL,
-  updated_at             INTEGER NOT NULL
+  updated_at             INTEGER NOT NULL,
+  -- Migration 5 (D23): closing and reopening.
+  closed_at              INTEGER,       -- NULL while open
+  closed_on              TEXT,          -- local date it was closed; the counter stops here
+  reopen_count           INTEGER NOT NULL DEFAULT 0 CHECK (reopen_count >= 0)
 );
 
 CREATE TABLE day_records (
@@ -390,6 +394,13 @@ CREATE TABLE day_records (
   thought_of_them  INTEGER NOT NULL DEFAULT 0 CHECK (thought_of_them IN (0, 1)),
   had_a_cry        INTEGER NOT NULL DEFAULT 0 CHECK (had_a_cry IN (0, 1)),
   chose_myself     INTEGER NOT NULL DEFAULT 0 CHECK (chose_myself IN (0, 1)),
+  -- Migration 4 (D22): the six "Lainnya" quick logs, each with the same 0/1 CHECK as above.
+  wanted_to_chat   INTEGER NOT NULL DEFAULT 0,
+  checked_socials  INTEGER NOT NULL DEFAULT 0,
+  missed_them      INTEGER NOT NULL DEFAULT 0,
+  felt_angry       INTEGER NOT NULL DEFAULT 0,
+  felt_relieved    INTEGER NOT NULL DEFAULT 0,
+  slept_well       INTEGER NOT NULL DEFAULT 0,
   updated_at       INTEGER NOT NULL,
   PRIMARY KEY (profile_id, date)
 );
@@ -567,7 +578,7 @@ Work runs in this order; each step is reviewed against nabila's mockups before t
 | 6 | Memory timeline and entry detail (Epic 6) | Done in PR #3 (calendar view still P1) |
 | 7 | Lock, Unlock and Let Go (Epic 5) | Done in PR #3 |
 | 8 | Lainnya quick logs (D22) | Done in PR #3 with the proposed list; final list still Q8 |
-| 9 | Closing and reopening a Pudar (D23) | Needs a mockup and Q7 |
+| 9 | Closing and reopening a Pudar (D23) | Done in PR #3 with the Q7 default; migration 5 |
 | 10 | Settings and privacy, Delete all data (Epic 7) | |
 | 11 | Dark mode | All screens exist, so every color is known |
 | 12 | Onboarding, app lock, hardening (Epic 8) | |
@@ -683,7 +694,7 @@ Do not optimize for streak length, frequency of thinking about someone, or daily
 | Q3 | Final app name "Pudar" — App Store availability | Check before Epic 9 | Epic 9 |
 | Q5 | Support resource link and copy reviewed by someone with mental-health background | Yes | Epic 7 |
 | Q6 | Button style: deeper `primaryInk` fill with white text (current), or `primary` fill with large bold dark text | `primaryInk` | Epic 4 |
-| Q7 | Show how many times a closed Pudar was reopened? A visible count can feel like a score, which §3 avoids | Store it; show only on the closed Pudar as neutral text ("Dibuka lagi 2 kali"), never as a trend | Step 9 |
+| Q7 | Show how many times a closed Pudar was reopened? A visible count can feel like a score, which §3 avoids | Store it; show only on the closed Pudar as neutral text ("Dibuka lagi 2 kali"), never as a trend. Built this way in step 9; easy to hide later | Step 9 |
 | Q8 | Final list of "Lainnya" quick logs (up to six) | Built with the six proposed (Ingin chat dia, Lihat media sosialnya, Kangen, Marah, Merasa lega, Tidur nyenyak; migration 4); renaming a label later needs no migration | Step 8 |
 
 ---

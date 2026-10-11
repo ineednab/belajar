@@ -1,4 +1,6 @@
 import { configureConnection } from '../connection';
+import { NO_QUICK_LOGS, saveQuickLogs } from '../day-records';
+import { createEntry, updateEntry } from '../entries';
 import { migrate } from '../migrations';
 import {
   ProfileValidationError,
@@ -10,6 +12,9 @@ import {
   persistActiveProfileId,
   startAgainToday,
   updateProfile,
+  closeProfile,
+  ProfileClosedError,
+  reopenProfile,
 } from '../profiles';
 import { getSetting } from '../settings';
 import { createTestDb, type TestDb } from './test-db';
@@ -43,6 +48,9 @@ describe('profiles repository', () => {
       noContactStartDate: '2026-10-02',
       createdAt: T0,
       updatedAt: T0,
+      closedAt: null,
+      closedOn: null,
+      reopenCount: 0,
     });
     expect(await getProfile(db, 'p1')).toEqual(created);
   });
@@ -85,6 +93,9 @@ describe('profiles repository', () => {
       noContactStartDate: null,
       createdAt: T0,
       updatedAt: T0 + 5,
+      closedAt: null,
+      closedOn: null,
+      reopenCount: 0,
     });
   });
 
@@ -173,5 +184,55 @@ describe('active profile', () => {
 
     expect(await loadProfilesSnapshot(db)).toEqual({ profiles: [], activeProfileId: null });
     expect(await getSetting(db, 'active_profile_id')).toBeNull();
+  });
+});
+
+describe('closing and reopening a Pudar (D23)', () => {
+  let db: TestDb;
+  const input = { name: 'V', icon: null, accentColor: null, noContactStartDate: '2026-10-01' };
+
+  beforeEach(async () => {
+    db = await createTestDb();
+    await configureConnection(db);
+    await migrate(db);
+    await createProfile(db, input, { id: 'p1', now: T0, today: TODAY });
+  });
+
+  it('closes on today and keeps everything else', async () => {
+    await closeProfile(db, 'p1', { now: T0 + 10, today: TODAY });
+    expect(await getProfile(db, 'p1')).toMatchObject({
+      closedAt: T0 + 10,
+      closedOn: TODAY,
+      reopenCount: 0,
+      noContactStartDate: '2026-10-01',
+    });
+
+    // Closing again doesn't move the date.
+    await closeProfile(db, 'p1', { now: T0 + 20, today: '2026-10-12' });
+    expect((await getProfile(db, 'p1'))?.closedOn).toBe(TODAY);
+  });
+
+  it('refuses new entries, edits and quick logs while closed', async () => {
+    await createEntry(db, 'p1', TODAY, 'Before', { id: 'e1', now: T0 });
+    await closeProfile(db, 'p1', { now: T0 + 10, today: TODAY });
+
+    await expect(createEntry(db, 'p1', TODAY, 'After', { id: 'e2', now: T0 + 20 })).rejects.toBeInstanceOf(
+      ProfileClosedError,
+    );
+    await expect(updateEntry(db, 'e1', 'Changed', T0 + 20)).rejects.toBeInstanceOf(ProfileClosedError);
+    await expect(
+      saveQuickLogs(db, 'p1', TODAY, { ...NO_QUICK_LOGS, hadACry: true }, T0 + 20),
+    ).rejects.toBeInstanceOf(ProfileClosedError);
+  });
+
+  it('counts each reopen and becomes writable again', async () => {
+    await closeProfile(db, 'p1', { now: T0 + 10, today: TODAY });
+    await reopenProfile(db, 'p1', T0 + 20);
+    await closeProfile(db, 'p1', { now: T0 + 30, today: TODAY });
+    await reopenProfile(db, 'p1', T0 + 40);
+    await reopenProfile(db, 'p1', T0 + 50); // already open: not counted
+
+    expect(await getProfile(db, 'p1')).toMatchObject({ closedAt: null, closedOn: null, reopenCount: 2 });
+    await createEntry(db, 'p1', TODAY, 'Again', { id: 'e1', now: T0 + 60 });
   });
 });

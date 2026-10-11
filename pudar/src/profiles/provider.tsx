@@ -10,10 +10,12 @@ import {
 } from 'react';
 
 import {
+  closeProfile,
   createProfile,
   deleteProfile,
   loadProfilesSnapshot,
   persistActiveProfileId,
+  reopenProfile,
   startAgainToday,
   updateProfile,
   type Profile,
@@ -31,6 +33,8 @@ type ProfilesContextValue = {
   remove(id: string): Promise<void>;
   setActive(id: string): Promise<void>;
   startAgain(id: string): Promise<void>;
+  close(id: string): Promise<void>;
+  reopen(id: string): Promise<void>;
 };
 
 const ProfilesContext = createContext<ProfilesContextValue | null>(null);
@@ -85,6 +89,14 @@ export function ProfilesProvider({ children }: { children: ReactNode }) {
       },
       async startAgain(id) {
         await startAgainToday(db, id, clock());
+        await reload();
+      },
+      async close(id) {
+        await closeProfile(db, id, clock());
+        await reload();
+      },
+      async reopen(id) {
+        await reopenProfile(db, id, Date.now());
         await reload();
       },
     };

@@ -6,6 +6,7 @@ import { Icon } from '@/components/icon';
 import { ProfileAvatar } from '@/components/profile-avatar';
 import { SecondaryButton } from '@/components/secondary-button';
 import { TextButton } from '@/components/profile-form';
+import { isClosed, type Profile } from '@/db/profiles';
 import { useProfiles } from '@/profiles/provider';
 import { ICONS } from '@/theme/icons';
 import { colors, spacing } from '@/theme/tokens';
@@ -19,35 +20,42 @@ export default function ProfilesSheet() {
     router.back();
   };
 
+  const open = profiles.filter((p) => !isClosed(p));
+  const closed = profiles.filter(isClosed);
+
+  const renderRow = (profile: Profile) => {
+    const active = profile.id === activeProfile?.id;
+    return (
+      <View key={profile.id} style={styles.row}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Pudar untuk ${profile.name}`}
+          accessibilityState={{ selected: active }}
+          onPress={() => choose(profile.id)}
+          style={({ pressed }) => [styles.rowMain, pressed && styles.pressed]}>
+          <ProfileAvatar name={profile.name} icon={profile.icon} accentColor={profile.accentColor} />
+          <AppText variant="label" style={styles.name} numberOfLines={1}>
+            {profile.name}
+          </AppText>
+          {active && <Icon icon={ICONS.check} size={18} color={colors.primaryInk} />}
+        </Pressable>
+        <TextButton
+          label="Ubah"
+          onPress={() => router.push({ pathname: '/profile/[id]', params: { id: profile.id } })}
+        />
+      </View>
+    );
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.content}>
-      {profiles.map((profile) => {
-        const active = profile.id === activeProfile?.id;
-        return (
-          <View key={profile.id} style={styles.row}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Pudar untuk ${profile.name}`}
-              accessibilityState={{ selected: active }}
-              onPress={() => choose(profile.id)}
-              style={({ pressed }) => [styles.rowMain, pressed && styles.pressed]}>
-              <ProfileAvatar
-                name={profile.name}
-                icon={profile.icon}
-                accentColor={profile.accentColor}
-              />
-              <AppText variant="label" style={styles.name} numberOfLines={1}>
-                {profile.name}
-              </AppText>
-              {active && <Icon icon={ICONS.check} size={18} color={colors.primaryInk} />}
-            </Pressable>
-            <TextButton
-              label="Ubah"
-              onPress={() => router.push({ pathname: '/profile/[id]', params: { id: profile.id } })}
-            />
-          </View>
-        );
-      })}
+      {open.map(renderRow)}
+      {closed.length > 0 && (
+        <AppText variant="caption" style={styles.sectionTitle} accessibilityRole="header">
+          SUDAH SELESAI
+        </AppText>
+      )}
+      {closed.map(renderRow)}
       <View style={styles.newButton}>
         <SecondaryButton label="Pudar baru" icon={ICONS.plus} onPress={() => router.push('/profile/new')} />
       </View>
@@ -77,6 +85,10 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.6,
+  },
+  sectionTitle: {
+    marginTop: spacing.md,
+    letterSpacing: 0.5,
   },
   newButton: {
     marginTop: spacing.md,
