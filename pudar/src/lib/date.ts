@@ -105,3 +105,12 @@ export function weekContaining(date: LocalDate, weekStartsOn: number): LocalDate
 export function noContactDays(start: LocalDate, today: LocalDate): number {
   return Math.max(0, diffCalendarDays(start, today));
 }
+
+/**
+ * A `Date` at local noon on `date`, for date pickers. Noon (not midnight) because a few
+ * timezones skip midnight on their DST day, which would land on the previous date.
+ */
+export function localDateToDate(date: LocalDate): Date {
+  const utc = new Date(parse(date));
+  return new Date(utc.getUTCFullYear(), utc.getUTCMonth(), utc.getUTCDate(), 12);
+}
