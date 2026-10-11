@@ -1,0 +1,77 @@
+import type { Db } from './types';
+
+/**
+ * Schema migrations, indexed by the version they upgrade *from*.
+ * Never edit a migration that has shipped; append a new one instead.
+ * The schema is documented in docs/PRD.md §7.
+ */
+export const MIGRATIONS: readonly string[] = [
+  // v0 → v1: initial schema
+  `
+  CREATE TABLE profiles (
+    id                     TEXT PRIMARY KEY NOT NULL,
+    name                   TEXT NOT NULL CHECK (length(name) BETWEEN 1 AND 30),
+    icon                   TEXT,
+    accent_color           TEXT,
+    no_contact_start_date  TEXT,
+    created_at             INTEGER NOT NULL,
+    updated_at             INTEGER NOT NULL
+  );
+
+  CREATE TABLE day_records (
+    profile_id       TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    date             TEXT NOT NULL,
+    thought_of_them  INTEGER NOT NULL DEFAULT 0 CHECK (thought_of_them IN (0, 1)),
+    had_a_cry        INTEGER NOT NULL DEFAULT 0 CHECK (had_a_cry IN (0, 1)),
+    chose_myself     INTEGER NOT NULL DEFAULT 0 CHECK (chose_myself IN (0, 1)),
+    updated_at       INTEGER NOT NULL,
+    PRIMARY KEY (profile_id, date)
+  );
+
+  CREATE TABLE journal_entries (
+    id                    TEXT PRIMARY KEY NOT NULL,
+    profile_id            TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    date                  TEXT NOT NULL,
+    content               TEXT CHECK (content IS NULL OR length(content) BETWEEN 1 AND 2000),
+    created_at            INTEGER NOT NULL,
+    updated_at            INTEGER NOT NULL,
+    locked                INTEGER NOT NULL DEFAULT 0 CHECK (locked IN (0, 1)),
+    retention_expires_at  INTEGER NOT NULL,
+    faded_at              INTEGER,
+    UNIQUE (profile_id, date)
+  );
+
+  CREATE INDEX idx_entries_profile_date ON journal_entries (profile_id, date DESC);
+  CREATE INDEX idx_entries_pending_purge ON journal_entries (retention_expires_at)
+    WHERE content IS NOT NULL;
+
+  CREATE TABLE settings (
+    key    TEXT PRIMARY KEY NOT NULL,
+    value  TEXT NOT NULL
+  );
+  `,
+];
+
+export const SCHEMA_VERSION = MIGRATIONS.length;
+
+export async function getSchemaVersion(db: Db): Promise<number> {
+  const row = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+  return row?.user_version ?? 0;
+}
+
+/** Applies pending migrations, each in its own transaction. Safe to call on every launch. */
+export async function migrate(db: Db): Promise<{ from: number; to: number }> {
+  const from = await getSchemaVersion(db);
+  if (from > SCHEMA_VERSION) {
+    throw new Error(
+      `Database schema v${from} is newer than this version of Pudar (v${SCHEMA_VERSION}).`,
+    );
+  }
+  for (let version = from; version < SCHEMA_VERSION; version++) {
+    await db.withTransactionAsync(async () => {
+      await db.execAsync(MIGRATIONS[version]);
+      await db.execAsync(`PRAGMA user_version = ${version + 1}`);
+    });
+  }
+  return { from, to: SCHEMA_VERSION };
+}
