@@ -5,6 +5,8 @@ import { addDays, compareLocalDates, localDateToDate, weekContaining, type Local
 import { colors, spacing } from '@/theme/tokens';
 import { fonts } from '@/theme/typography';
 
+import { LOCALE } from '@/lib/locale';
+
 import { AppText } from './app-text';
 
 export type DayMark = { faded: boolean };
@@ -69,7 +71,7 @@ export function WeekStrip({
         const future = compareLocalDates(day, today) > 0;
         const isSelected = day === selected;
         const mark = marks.get(day);
-        const weekday = date.toLocaleDateString(undefined, { weekday: 'short' });
+        const weekday = date.toLocaleDateString(LOCALE, { weekday: 'short' });
         return (
           <Pressable
             key={day}
@@ -77,7 +79,7 @@ export function WeekStrip({
             onPress={() => onSelect(day)}
             accessibilityRole="tab"
             accessibilityState={{ selected: isSelected, disabled: future }}
-            accessibilityLabel={date.toLocaleDateString(undefined, {
+            accessibilityLabel={date.toLocaleDateString(LOCALE, {
               weekday: 'long',
               day: 'numeric',
               month: 'long',

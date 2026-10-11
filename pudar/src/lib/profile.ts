@@ -29,17 +29,17 @@ export function validateProfileInput(input: ProfileInput, today: LocalDate): Pro
   const errors: ProfileInputErrors = {};
   const name = input.name.trim();
   if (name.length === 0) {
-    errors.name = 'Give this Pudar a name.';
+    errors.name = 'Beri nama untuk Pudar ini.';
   } else if (characterCount(name) > MAX_PROFILE_NAME_LENGTH) {
-    errors.name = `Keep it to ${MAX_PROFILE_NAME_LENGTH} characters.`;
+    errors.name = `Maksimal ${MAX_PROFILE_NAME_LENGTH} karakter.`;
   }
 
   const start = input.noContactStartDate;
   if (start !== null) {
     if (!isValidLocalDate(start)) {
-      errors.noContactStartDate = 'Choose a valid date.';
+      errors.noContactStartDate = 'Pilih tanggal yang benar.';
     } else if (compareLocalDates(start, today) > 0) {
-      errors.noContactStartDate = "The start date can't be in the future.";
+      errors.noContactStartDate = 'Tanggal mulai tidak boleh di masa depan.';
     }
   }
   return errors;

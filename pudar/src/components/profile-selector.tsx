@@ -15,8 +15,8 @@ export function ProfileSelector({ profile }: { profile: Profile }) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`Pudar for ${profile.name}`}
-      accessibilityHint="Switch or create a Pudar"
+      accessibilityLabel={`Pudar untuk ${profile.name}`}
+      accessibilityHint="Ganti atau buat Pudar"
       onPress={() => router.push('/profiles')}
       style={({ pressed }) => [styles.chip, pressed && styles.pressed]}>
       <ProfileAvatar
@@ -26,7 +26,7 @@ export function ProfileSelector({ profile }: { profile: Profile }) {
         size={40}
       />
       <AppText numberOfLines={1} style={styles.label}>
-        Pudar for {profile.name}
+        Pudar untuk {profile.name}
       </AppText>
       <Icon icon={ICONS.chevronDown} size={16} color={colors.primaryInk} />
     </Pressable>

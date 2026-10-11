@@ -2,12 +2,13 @@ import { forwardRef } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { MAX_ENTRY_LENGTH } from '@/lib/fading';
+import { LOCALE } from '@/lib/locale';
 import { colors, radii, spacing } from '@/theme/tokens';
 import { typography } from '@/theme/typography';
 
 import { AppText } from './app-text';
 
-const formatCount = (n: number) => n.toLocaleString('en-US');
+const formatCount = (n: number) => n.toLocaleString(LOCALE);
 
 /**
  * Today's journal text box with a live character count (PRD §6 Journal editor). While `locked`
@@ -26,9 +27,9 @@ export const JournalEditor = forwardRef<
         editable={!locked}
         multiline
         maxLength={MAX_ENTRY_LENGTH}
-        placeholder="Write what's on your mind…"
+        placeholder="Tulis apa yang ada di pikiranmu…"
         placeholderTextColor={colors.mutedInk}
-        accessibilityLabel="Journal entry"
+        accessibilityLabel="Tulisan jurnal"
         textAlignVertical="top"
         style={styles.input}
       />
@@ -37,7 +38,7 @@ export const JournalEditor = forwardRef<
           style={StyleSheet.absoluteFill}
           onPress={onLockedPress}
           accessibilityRole="button"
-          accessibilityLabel="Start writing"
+          accessibilityLabel="Mulai menulis"
         />
       )}
       <AppText variant="caption" style={styles.count}>

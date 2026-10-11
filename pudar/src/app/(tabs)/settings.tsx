@@ -13,13 +13,13 @@ export default function SettingsScreen() {
   return (
     <Screen>
       <AppText variant="title" accessibilityRole="header">
-        Settings
+        Pengaturan
       </AppText>
       <Card>
-        <AppText variant="heading">How fading works</AppText>
+        <AppText variant="heading">Cara tulisan memudar</AppText>
         <AppText variant="caption">
-          Each entry slowly fades, and its text is erased 30 days after you write it. The date and
-          your check-ins stay.
+          Setiap tulisan perlahan memudar, dan isinya terhapus 30 hari setelah kamu menulisnya.
+          Tanggal dan catatan perasaanmu tetap ada.
         </AppText>
       </Card>
       {__DEV__ && <StorageDiagnostics />}

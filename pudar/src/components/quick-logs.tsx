@@ -14,9 +14,9 @@ const NEUTRAL: Tone = { bg: colors.neutralBg, ink: colors.neutralIcon, selectedB
 const SELF: Tone = { bg: colors.selfGreenBg, ink: colors.selfGreenInk, selectedBg: colors.selfGreenInk };
 
 export const QUICK_LOGS: readonly { key: QuickLogKey; label: string; icon: IconSpec; tone: Tone }[] = [
-  { key: 'thoughtOfThem', label: 'Thought of them', icon: ICONS.brain, tone: NEUTRAL },
-  { key: 'hadACry', label: 'Had a cry', icon: ICONS.rain, tone: NEUTRAL },
-  { key: 'choseMyself', label: 'Chose myself', icon: ICONS.leaf, tone: SELF },
+  { key: 'thoughtOfThem', label: 'Memikirkannya', icon: ICONS.brain, tone: NEUTRAL },
+  { key: 'hadACry', label: 'Menangis', icon: ICONS.rain, tone: NEUTRAL },
+  { key: 'choseMyself', label: 'Memilih diriku', icon: ICONS.leaf, tone: SELF },
 ];
 
 /**

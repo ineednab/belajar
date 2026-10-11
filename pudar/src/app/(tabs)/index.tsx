@@ -39,9 +39,9 @@ export default function TodayScreen() {
         <View style={styles.firstLaunch}>
           <EmptyState
             icon={ICONS.leaf}
-            title="A journal for what you can't send."
-            body="Create a space for the person you're letting go of. You can make more than one.">
-            <PrimaryButton label="Create your first Pudar" onPress={() => router.push('/profile/new')} />
+            title="Jurnal untuk kata-kata yang tak bisa kamu kirim."
+            body="Buat ruang untuk orang yang sedang kamu lepaskan. Kamu bisa membuat lebih dari satu.">
+            <PrimaryButton label="Buat Pudar pertamamu" onPress={() => router.push('/profile/new')} />
           </EmptyState>
         </View>
       </Screen>
@@ -157,10 +157,10 @@ function Day({ profile }: { profile: Profile }) {
       {start === null ? (
         <EmptyState
           icon={ICONS.leaf}
-          title="Set the day you started"
-          body="Choose the date you began no contact to see your journey here.">
+          title="Atur hari kamu memulai"
+          body="Pilih tanggal kamu mulai tanpa kontak untuk melihat perjalananmu di sini.">
           <SecondaryButton
-            label="Set start date"
+            label="Atur tanggal mulai"
             icon={ICONS.calendar}
             compact
             onPress={() => router.push({ pathname: '/profile/[id]', params: { id: profile.id } })}
@@ -171,7 +171,7 @@ function Day({ profile }: { profile: Profile }) {
       ) : null}
 
       <AppText variant="heading" accessibilityRole="header" style={styles.sectionTitle}>
-        {isToday || writable ? 'How do I feel today?' : 'How did I feel on this day?'}
+        {isToday || writable ? 'Apa yang kurasakan hari ini?' : 'Apa yang kurasakan hari itu?'}
       </AppText>
       <QuickLogButtons value={quickLogs} onToggle={toggle} readOnly={!writable} />
 
@@ -184,11 +184,11 @@ function Day({ profile }: { profile: Profile }) {
             locked={acknowledged !== true}
             onLockedPress={() => acknowledged === false && setShowNotice(true)}
           />
-          <PrimaryButton label="Save my journal" onPress={save} disabled={!canSave} />
+          <PrimaryButton label="Simpan jurnalku" onPress={save} disabled={!canSave} />
           {savedAt !== null && !dirty && (
             <View style={styles.saved} accessibilityLiveRegion="polite">
               <Icon icon={ICONS.checkCircle} size={16} color={colors.selfGreenInk} />
-              <AppText variant="caption">Saved just now</AppText>
+              <AppText variant="caption">Baru saja tersimpan</AppText>
             </View>
           )}
         </>
@@ -203,19 +203,19 @@ function Day({ profile }: { profile: Profile }) {
 
 /** Elapsed days only: not a streak or score (PRD §6 No-contact counter). */
 function Counter({ days }: { days: number }) {
-  const label = days === 0 ? 'Starting today' : `${days} ${days === 1 ? 'day' : 'days'}`;
+  const label = days === 0 ? 'Mulai hari ini' : `${days} hari`;
   return (
-    <View style={styles.counter} accessible accessibilityLabel={`${label} no contact. One day at a time.`}>
+    <View style={styles.counter} accessible accessibilityLabel={`${label} tanpa kontak. Satu hari demi satu hari.`}>
       {days === 0 ? (
-        <AppText style={styles.counterWord}>Starting today</AppText>
+        <AppText style={styles.counterWord}>Mulai hari ini</AppText>
       ) : (
         <AppText style={styles.counterLine}>
           <AppText style={styles.counterNumber}>{days}</AppText>
-          <AppText style={styles.counterWord}> {days === 1 ? 'day' : 'days'}</AppText>
+          <AppText style={styles.counterWord}> hari</AppText>
         </AppText>
       )}
       <AppText variant="caption" style={styles.counterCaption}>
-        no contact · One day at a time.
+        tanpa kontak · Satu hari demi satu hari.
       </AppText>
     </View>
   );

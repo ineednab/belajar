@@ -3,6 +3,7 @@ import { useState, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { localDateToDate, todayLocal, toLocalDate } from '@/lib/date';
+import { LOCALE } from '@/lib/locale';
 import {
   MAX_PROFILE_NAME_LENGTH,
   characterCount,
@@ -66,15 +67,15 @@ export function ProfileForm({
       </View>
 
       <Field
-        label="Name or nickname"
+        label="Nama atau panggilan"
         error={submitted ? errors.name : undefined}
         hint={`${characterCount(input.name.trim())} / ${MAX_PROFILE_NAME_LENGTH}`}>
         <TextInput
           value={input.name}
           onChangeText={(name) => set('name', name)}
-          placeholder="Who is this space for?"
+          placeholder="Ruang ini untuk siapa?"
           placeholderTextColor={colors.mutedInk}
-          accessibilityLabel="Name or nickname"
+          accessibilityLabel="Nama atau panggilan"
           autoCapitalize="words"
           autoCorrect={false}
           returnKeyType="done"
@@ -82,7 +83,7 @@ export function ProfileForm({
         />
       </Field>
 
-      <Field label="Icon (optional)">
+      <Field label="Ikon (opsional)">
         <View style={styles.choices}>
           {PROFILE_ICONS.map((icon) => {
             const selected = input.icon === icon.key;
@@ -99,7 +100,7 @@ export function ProfileForm({
         </View>
       </Field>
 
-      <Field label="Color (optional)">
+      <Field label="Warna (opsional)">
         <View style={styles.choices}>
           {PROFILE_COLORS.map((color) => {
             const selected = input.accentColor === color.hex;
@@ -117,10 +118,10 @@ export function ProfileForm({
       </Field>
 
       <Field
-        label="First day of no contact (optional)"
+        label="Hari pertama tanpa kontak (opsional)"
         error={submitted ? errors.noContactStartDate : undefined}>
         {input.noContactStartDate === null ? (
-          <TextButton label="Set the day you started" onPress={() => {
+          <TextButton label="Atur hari kamu memulai" onPress={() => {
             set('noContactStartDate', today);
             if (Platform.OS !== 'ios') setShowAndroidPicker(true);
           }} />
@@ -131,6 +132,7 @@ export function ProfileForm({
                 value={localDateToDate(input.noContactStartDate)}
                 mode="date"
                 display="compact"
+                locale={LOCALE}
                 maximumDate={localDateToDate(today)}
                 accentColor={colors.primaryInk}
                 onChange={(_, date) => date && set('noContactStartDate', toLocalDate(date))}
@@ -138,7 +140,11 @@ export function ProfileForm({
             ) : (
               <>
                 <TextButton
-                  label={input.noContactStartDate}
+                  label={localDateToDate(input.noContactStartDate).toLocaleDateString(LOCALE, {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
                   onPress={() => setShowAndroidPicker(true)}
                 />
                 {showAndroidPicker && (
@@ -154,7 +160,7 @@ export function ProfileForm({
                 )}
               </>
             )}
-            <TextButton label="Remove" onPress={() => set('noContactStartDate', null)} />
+            <TextButton label="Hapus" onPress={() => set('noContactStartDate', null)} />
           </View>
         )}
       </Field>

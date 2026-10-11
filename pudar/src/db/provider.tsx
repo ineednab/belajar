@@ -45,8 +45,8 @@ export function useOpenDatabase(): DatabaseState {
         setState({ status: 'ready', db, encrypted });
         if (resetUnreadable) {
           Alert.alert(
-            'Starting fresh',
-            'Your previous journal could not be read on this device, so Pudar started a new one.',
+            'Memulai dari awal',
+            'Jurnal lamamu tidak bisa dibaca di perangkat ini, jadi Pudar memulai jurnal baru.',
           );
         }
       },

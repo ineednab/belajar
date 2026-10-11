@@ -104,15 +104,15 @@ export async function saveEntry(
   context: { id: string; now: number },
 ): Promise<JournalEntry> {
   if (content.trim().length === 0) {
-    throw new EntryValidationError('An entry needs some text.');
+    throw new EntryValidationError('Tulisan tidak boleh kosong.');
   }
   if (content.length > MAX_ENTRY_LENGTH) {
-    throw new EntryValidationError(`Keep it to ${MAX_ENTRY_LENGTH} characters.`);
+    throw new EntryValidationError(`Maksimal ${MAX_ENTRY_LENGTH} karakter.`);
   }
   const existing = await getEntryForDate(db, profileId, date, context.now);
   if (existing) {
     if (isFaded(existing)) {
-      throw new EntryValidationError('This entry has faded.');
+      throw new EntryValidationError('Tulisan ini sudah memudar.');
     }
     await db.runAsync(
       'UPDATE journal_entries SET content = ?, updated_at = ? WHERE id = ?',

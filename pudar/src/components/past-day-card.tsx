@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import type { QuickLogs } from '@/db/day-records';
 import type { JournalEntry } from '@/db/entries';
 import { localDateToDate, type LocalDate } from '@/lib/date';
+import { LOCALE } from '@/lib/locale';
 import { ICONS } from '@/theme/icons';
 import { colors, radii, spacing } from '@/theme/tokens';
 
@@ -20,7 +21,7 @@ export function PastDayCard({
   entry: JournalEntry | null;
   quickLogs: QuickLogs;
 }) {
-  const title = localDateToDate(date).toLocaleDateString(undefined, {
+  const title = localDateToDate(date).toLocaleDateString(LOCALE, {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -32,15 +33,15 @@ export function PastDayCard({
       <QuickLogIcons value={quickLogs} />
       {entry === null ? (
         <AppText variant="caption" style={styles.state}>
-          Nothing was written on this day.
+          Tidak ada tulisan hari itu.
         </AppText>
       ) : entry.content === null ? (
         <AppText variant="caption" style={styles.state}>
-          This entry has faded.
+          Tulisan ini sudah memudar.
         </AppText>
       ) : entry.locked ? (
         <AppText variant="caption" style={styles.state}>
-          This entry is locked. Your words are hidden while time keeps moving.
+          Tulisan ini dikunci. Kata-katamu disembunyikan, sementara waktu terus berjalan.
         </AppText>
       ) : (
         <AppText variant="body" style={styles.content}>
@@ -50,7 +51,7 @@ export function PastDayCard({
       <View style={styles.footer}>
         <Icon icon={ICONS.lock} size={12} color={colors.mutedInk} />
         <AppText variant="caption" style={styles.footerText}>
-          Past entries are read-only.
+          Tulisan lama hanya bisa dibaca.
         </AppText>
       </View>
     </View>

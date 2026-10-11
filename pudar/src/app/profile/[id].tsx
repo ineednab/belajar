@@ -18,12 +18,12 @@ export default function EditProfileScreen() {
 
   const confirmStartAgain = () =>
     Alert.alert(
-      'Start again from today?',
-      'Starting again is part of it. Your count will begin from today.',
+      'Mulai lagi dari hari ini?',
+      'Memulai lagi adalah bagian dari prosesnya. Hitunganmu akan dimulai dari hari ini.',
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Batal', style: 'cancel' },
         {
-          text: 'Start again',
+          text: 'Mulai lagi',
           onPress: async () => {
             await startAgain(profile.id);
             router.back();
@@ -34,12 +34,12 @@ export default function EditProfileScreen() {
 
   const confirmDelete = () =>
     Alert.alert(
-      `Delete "${profile.name}"?`,
-      "This permanently deletes this Pudar, with all of its entries and check-ins. This can't be undone.",
+      `Hapus "${profile.name}"?`,
+      'Pudar ini akan terhapus selamanya, beserta semua tulisan dan catatan perasaannya. Ini tidak bisa dibatalkan.',
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Batal', style: 'cancel' },
         {
-          text: 'Delete',
+          text: 'Hapus',
           style: 'destructive',
           onPress: async () => {
             await remove(profile.id);
@@ -62,7 +62,7 @@ export default function EditProfileScreen() {
           accentColor: profile.accentColor,
           noContactStartDate: profile.noContactStartDate,
         }}
-        submitLabel="Save changes"
+        submitLabel="Simpan perubahan"
         onSubmit={async (input) => {
           await update(profile.id, input);
           router.back();
@@ -70,12 +70,12 @@ export default function EditProfileScreen() {
         <View style={styles.actions}>
           {canStartAgain && (
             <View style={styles.action}>
-              <TextButton label="Start again from today" onPress={confirmStartAgain} />
-              <AppText variant="caption">Resets the no-contact count to today.</AppText>
+              <TextButton label="Mulai lagi dari hari ini" onPress={confirmStartAgain} />
+              <AppText variant="caption">Mengatur ulang hitungan tanpa kontak ke hari ini.</AppText>
             </View>
           )}
           <View style={styles.action}>
-            <TextButton label="Delete this Pudar" destructive onPress={confirmDelete} />
+            <TextButton label="Hapus Pudar ini" destructive onPress={confirmDelete} />
           </View>
         </View>
       </ProfileForm>

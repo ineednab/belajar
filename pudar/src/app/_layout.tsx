@@ -59,14 +59,14 @@ export default function RootLayout() {
             <Stack.Screen
               name="profiles"
               options={{
-                title: 'Your Pudars',
+                title: 'Pudar-mu',
                 presentation: 'formSheet',
                 sheetAllowedDetents: [0.5, 1],
                 sheetGrabberVisible: true,
               }}
             />
-            <Stack.Screen name="profile/new" options={{ title: 'New Pudar', presentation: 'modal' }} />
-            <Stack.Screen name="profile/[id]" options={{ title: 'Edit Pudar', presentation: 'modal' }} />
+            <Stack.Screen name="profile/new" options={{ title: 'Pudar baru', presentation: 'modal' }} />
+            <Stack.Screen name="profile/[id]" options={{ title: 'Ubah Pudar', presentation: 'modal' }} />
           </Stack>
         </ThemeProvider>
       </ProfilesProvider>

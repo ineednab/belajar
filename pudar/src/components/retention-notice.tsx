@@ -12,17 +12,17 @@ export function RetentionNotice({ visible, onAcknowledge }: { visible: boolean; 
       <View style={styles.backdrop}>
         <View style={styles.sheet} accessibilityViewIsModal>
           <AppText variant="heading" accessibilityRole="header">
-            Your words will fade.
+            Kata-katamu akan memudar.
           </AppText>
           <AppText variant="body">
-            Each entry slowly fades and its text is erased 30 days after you write it, whether or
-            not you open Pudar. The date and your check-ins stay.
+            Setiap tulisan perlahan memudar, dan isinya terhapus 30 hari setelah kamu menulisnya,
+            entah kamu membuka Pudar atau tidak. Tanggal dan catatan perasaanmu tetap ada.
           </AppText>
           <AppText variant="body">
-            You can lock an entry to hide it, or let it go sooner. Pudar can&apos;t recover erased or
-            deleted words, and there is no export.
+            Kamu bisa mengunci tulisan untuk menyembunyikannya, atau melepaskannya lebih cepat. Pudar
+            tidak bisa memulihkan kata-kata yang sudah terhapus, dan tidak ada fitur ekspor.
           </AppText>
-          <PrimaryButton label="I understand" onPress={onAcknowledge} />
+          <PrimaryButton label="Aku mengerti" onPress={onAcknowledge} />
         </View>
       </View>
     </Modal>

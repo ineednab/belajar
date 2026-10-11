@@ -16,7 +16,7 @@ describe('validateProfileInput', () => {
   });
 
   it.each(['', '   ', '\n\t'])('requires a name (%j)', (name) => {
-    expect(validateProfileInput({ ...base, name }, TODAY).name).toBe('Give this Pudar a name.');
+    expect(validateProfileInput({ ...base, name }, TODAY).name).toBe('Beri nama untuk Pudar ini.');
   });
 
   it('allows exactly 30 characters after trimming', () => {
@@ -41,10 +41,10 @@ describe('validateProfileInput', () => {
   it('rejects a future or invalid start date', () => {
     expect(
       validateProfileInput({ ...base, noContactStartDate: '2026-10-12' }, TODAY).noContactStartDate,
-    ).toMatch(/future/);
+    ).toMatch(/masa depan/);
     expect(
       validateProfileInput({ ...base, noContactStartDate: '2026-02-30' }, TODAY).noContactStartDate,
-    ).toMatch(/valid/);
+    ).toMatch(/tanggal yang benar/);
   });
 
   it('reports several problems at once', () => {

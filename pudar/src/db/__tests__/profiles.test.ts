@@ -59,7 +59,7 @@ describe('profiles repository', () => {
     ).rejects.toBeInstanceOf(ProfileValidationError);
     await expect(
       createProfile(db, { ...input, noContactStartDate: '2026-10-12' }, { id: 'p1', now: T0, today: TODAY }),
-    ).rejects.toThrow(/future/);
+    ).rejects.toThrow(/masa depan/);
     expect(await count(db, 'profiles')).toBe(0);
   });
 

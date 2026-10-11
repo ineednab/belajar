@@ -27,7 +27,7 @@ export default function ProfilesSheet() {
           <View key={profile.id} style={styles.row}>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={`Pudar for ${profile.name}`}
+              accessibilityLabel={`Pudar untuk ${profile.name}`}
               accessibilityState={{ selected: active }}
               onPress={() => choose(profile.id)}
               style={({ pressed }) => [styles.rowMain, pressed && styles.pressed]}>
@@ -42,14 +42,14 @@ export default function ProfilesSheet() {
               {active && <Icon icon={ICONS.check} size={18} color={colors.primaryInk} />}
             </Pressable>
             <TextButton
-              label="Edit"
+              label="Ubah"
               onPress={() => router.push({ pathname: '/profile/[id]', params: { id: profile.id } })}
             />
           </View>
         );
       })}
       <View style={styles.newButton}>
-        <SecondaryButton label="New Pudar" icon={ICONS.plus} onPress={() => router.push('/profile/new')} />
+        <SecondaryButton label="Pudar baru" icon={ICONS.plus} onPress={() => router.push('/profile/new')} />
       </View>
     </ScrollView>
   );

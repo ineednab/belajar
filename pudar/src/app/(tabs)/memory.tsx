@@ -16,9 +16,9 @@ export default function MemoryScreen() {
       {activeProfile && <ProfileSelector profile={activeProfile} />}
       <EmptyState
         icon={ICONS.leaf}
-        title="Your memories will appear here, slowly fading with time."
-        body="Write your first entry to start building your timeline.">
-        <PrimaryButton label="Write your first entry" onPress={() => router.navigate('/')} />
+        title="Kenanganmu akan muncul di sini, perlahan memudar seiring waktu."
+        body="Tulis tulisan pertamamu untuk mulai mengisi linimasa.">
+        <PrimaryButton label="Mulai menulis" onPress={() => router.navigate('/')} />
       </EmptyState>
     </Screen>
   );
