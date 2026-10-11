@@ -22,6 +22,7 @@
 | Quick logs (§6) | Three toggles | Three main toggles plus **"Lainnya"** with up to six more, including "Ingin chat dia" (D22) |
 | Closing a Pudar | — | **"Aku sudah selesai dengan orang ini"** turns a Pudar into read-only history; reopening is possible and counted (D23) |
 | Dark mode (§8) | Light only | **Light and dark**, following the system setting |
+| "Ingin chat dia" | — | Opens a write-it-here screen with a 10-minute breathing wait, then Lepaskan or Simpan (§5) |
 | Today | — | A "Hari ini" button returns to today from any past day or week |
 | Visual reference | — | nabila's mockups (`/mockup/referensi-desain-nabila-v1.png` in the project files); serif headings use Fraunces Regular |
 | Order of work (§10) | Epics 1 → 9 | Roadmap in §10.0 |
@@ -148,7 +149,9 @@ Wording rule: **"Pudar"** = a profile/space ("+ Pudar baru", "Pudar untuk V"). *
 
 **"Hari ini" button.** When a past day is selected, or the week strip shows an earlier week, a small "Hari ini" pill appears next to the week strip and jumps back to today.
 
-**Lainnya (more quick logs).** A "Lainnya" button sits under the three main quick logs and opens a sheet of extra toggles. Proposed set, to be confirmed by nabila: Ingin chat dia, Lihat media sosialnya, Kangen, Marah, Merasa lega, Tidur nyenyak. Toggles that are on also appear as small chips under the main row. "Ingin chat dia" also focuses the editor with the placeholder "Tulis di sini saja, bukan ke dia." Same rules as the main three: saved on tap, no counts or scores.
+**Lainnya (more quick logs).** A "Lainnya" button sits under the three main quick logs and opens a sheet of extra toggles. Proposed set, to be confirmed by nabila: Ingin chat dia, Lihat media sosialnya, Kangen, Marah, Merasa lega, Tidur nyenyak. Toggles that are on also appear as small chips under the main row. Same rules as the main three: saved on tap, no counts or scores.
+
+**"Ingin chat dia" screen (from the competitor benchmark, 2026-10-11).** Turning on "Ingin chat dia" for today opens a modal titled "Tulis di sini, bukan ke dia." It has a text box for the message the person wants to send, a ten-minute countdown inside a slowly breathing circle ("Tarik napas pelan…" / "Hembuskan perlahan…"; static when Reduce Motion is on), and two choices that are available at any time: **Lepaskan** (the words are discarded, nothing is stored) and **Simpan sebagai tulisan** (saved as a normal entry for today, with the usual 30-day fade). Nothing is written to disk until "Simpan". No count of how often this happens is shown anywhere.
 
 **Closing a Pudar.** At the very bottom of Today, a quiet text button "Aku sudah selesai dengan orang ini" opens a gentle confirmation. A closed Pudar shows a "Selesai" label, its frozen counter, and its history read-only on Today and Memory. "Buka lagi" (on Edit Pudar) asks for confirmation and increments `reopenCount`. Built with the Q7 default: `reopenCount` shows only as neutral text ("Dibuka lagi 2 kali") on the closed Pudar's banner and on Edit Pudar, never as a trend. Closed Pudars stay in the switcher under "Sudah selesai" and can still be deleted. Locking and Let Go still work on a closed Pudar's entries, since they only hide or erase. An unsaved draft is kept and comes back on reopen (or fades after 30 days).
 
@@ -589,6 +592,7 @@ Work runs in this order; each step is reviewed against nabila's mockups before t
 | 9 | Closing and reopening a Pudar (D23) | Done in PR #3 with the Q7 default; migration 5 |
 | 10 | Settings and privacy, Delete all data (Epic 7) | Done in PR #3; support copy still Q5 |
 | 11 | Dark mode | Done in PR #3 (§8 Dark mode) |
+| 11a | "Ingin chat dia" screen (benchmark idea 1) | Done in PR #3 (§5 Lainnya) |
 | 12 | Onboarding, app lock, hardening (Epic 8) | |
 | 13 | App Store release (Epic 9) | |
 

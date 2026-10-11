@@ -1,6 +1,6 @@
 import * as Crypto from 'expo-crypto';
 import { getCalendars } from 'expo-localization';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, AppState, Pressable, View, type TextInput } from 'react-native';
 
@@ -161,6 +161,10 @@ function Day({ profile }: { profile: Profile }) {
     };
   }, []);
 
+  // Coming back from another screen (such as "Ingin chat dia") reloads the day's entries.
+  const [focusVersion, setFocusVersion] = useState(0);
+  useFocusEffect(useCallback(() => setFocusVersion((n) => n + 1), []));
+
   useEffect(() => {
     let cancelled = false;
     const now = Date.now();
@@ -176,7 +180,7 @@ function Day({ profile }: { profile: Profile }) {
     return () => {
       cancelled = true;
     };
-  }, [db, profile.id, selected, purgeVersion]);
+  }, [db, profile.id, selected, purgeVersion, focusVersion]);
 
   useEffect(() => {
     let cancelled = false;
@@ -186,7 +190,7 @@ function Day({ profile }: { profile: Profile }) {
     return () => {
       cancelled = true;
     };
-  }, [db, profile.id, writableDate, purgeVersion]);
+  }, [db, profile.id, writableDate, purgeVersion, focusVersion]);
 
   const [marksVersion, setMarksVersion] = useState(0);
   useEffect(() => {
@@ -198,7 +202,7 @@ function Day({ profile }: { profile: Profile }) {
     return () => {
       cancelled = true;
     };
-  }, [db, profile.id, week, marksVersion, purgeVersion]);
+  }, [db, profile.id, week, marksVersion, purgeVersion, focusVersion]);
   const onWeekChange = useCallback((from: LocalDate, to: LocalDate) => {
     setWeek((current) => (current?.from === from && current.to === to ? current : { from, to }));
   }, []);
@@ -207,6 +211,8 @@ function Day({ profile }: { profile: Profile }) {
     const next = { ...quickLogs, [key]: !quickLogs[key] };
     setQuickLogs(next);
     await saveQuickLogs(db, profile.id, selected, next, Date.now());
+    // Turning on "Ingin chat dia" today opens a place to write the message instead of sending it.
+    if (key === 'wantedToChat' && next[key] && selected === today) router.push('/ingin-chat');
   };
 
   const save = async () => {

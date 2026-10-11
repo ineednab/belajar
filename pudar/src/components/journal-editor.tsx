@@ -17,8 +17,25 @@ const formatCount = (n: number) => n.toLocaleString(LOCALE);
  */
 export const JournalEditor = forwardRef<
   TextInput,
-  { value: string; onChange: (text: string) => void; locked: boolean; onLockedPress: () => void }
->(function JournalEditor({ value, onChange, locked, onLockedPress }, ref) {
+  {
+    value: string;
+    onChange: (text: string) => void;
+    locked: boolean;
+    onLockedPress: () => void;
+    placeholder?: string;
+    accessibilityLabel?: string;
+  }
+>(function JournalEditor(
+  {
+    value,
+    onChange,
+    locked,
+    onLockedPress,
+    placeholder = 'Tulis apa yang ada di pikiranmu…',
+    accessibilityLabel = 'Tulisan jurnal',
+  },
+  ref,
+) {
   const styles = useStyles();
   const colors = useColors();
   return (
@@ -30,9 +47,9 @@ export const JournalEditor = forwardRef<
         editable={!locked}
         multiline
         maxLength={MAX_ENTRY_LENGTH}
-        placeholder="Tulis apa yang ada di pikiranmu…"
+        placeholder={placeholder}
         placeholderTextColor={colors.mutedInk}
-        accessibilityLabel="Tulisan jurnal"
+        accessibilityLabel={accessibilityLabel}
         textAlignVertical="top"
         style={styles.input}
       />

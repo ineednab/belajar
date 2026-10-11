@@ -74,6 +74,7 @@ export default function RootLayout() {
             />
             <Stack.Screen name="profile/new" options={{ title: 'Pudar baru', presentation: 'modal' }} />
             <Stack.Screen name="profile/[id]" options={{ title: 'Ubah Pudar', presentation: 'modal' }} />
+            <Stack.Screen name="ingin-chat" options={{ title: 'Ingin chat dia', presentation: 'modal' }} />
             <Stack.Screen name="entry/[id]" options={{ title: '', headerBackTitle: 'Kenangan' }} />
             {['settings/fading', 'settings/privacy', 'settings/support', 'settings/delete'].map((name) => (
               <Stack.Screen key={name} name={name} options={{ title: '', headerBackTitle: 'Pengaturan' }} />
