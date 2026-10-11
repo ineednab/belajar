@@ -1,10 +1,11 @@
-import { SymbolView, type SFSymbol } from 'expo-symbols';
 import { Pressable, StyleSheet } from 'react-native';
 
+import type { IconSpec } from '@/theme/icons';
 import { fonts } from '@/theme/typography';
 import { colors, radii, spacing } from '@/theme/tokens';
 
 import { AppText } from './app-text';
+import { Icon } from './icon';
 
 /** Outlined pill for secondary actions ("Set start date", "+ New Pudar"). */
 export function SecondaryButton({
@@ -15,7 +16,7 @@ export function SecondaryButton({
 }: {
   label: string;
   onPress: () => void;
-  icon?: SFSymbol;
+  icon?: IconSpec;
   /** Hug the label instead of filling the row. */
   compact?: boolean;
 }) {
@@ -24,7 +25,7 @@ export function SecondaryButton({
       accessibilityRole="button"
       onPress={onPress}
       style={({ pressed }) => [styles.button, compact && styles.compact, pressed && styles.pressed]}>
-      {icon && <SymbolView name={icon} size={16} tintColor={colors.primaryInk} />}
+      {icon && <Icon icon={icon} size={16} color={colors.primaryInk} />}
       <AppText style={styles.label}>{label}</AppText>
     </Pressable>
   );

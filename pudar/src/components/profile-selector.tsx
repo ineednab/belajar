@@ -1,12 +1,13 @@
-import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet } from 'react-native';
 
 import type { Profile } from '@/db/profiles';
+import { ICONS } from '@/theme/icons';
 import { colors, spacing } from '@/theme/tokens';
 import { typography } from '@/theme/typography';
 
 import { AppText } from './app-text';
+import { Icon } from './icon';
 import { ProfileAvatar } from './profile-avatar';
 
 /** Top-of-Today chip that opens the profile switcher. */
@@ -27,7 +28,7 @@ export function ProfileSelector({ profile }: { profile: Profile }) {
       <AppText numberOfLines={1} style={styles.label}>
         Pudar for {profile.name}
       </AppText>
-      <SymbolView name="chevron.down" size={14} tintColor={colors.primaryInk} />
+      <Icon icon={ICONS.chevronDown} size={16} color={colors.primaryInk} />
     </Pressable>
   );
 }

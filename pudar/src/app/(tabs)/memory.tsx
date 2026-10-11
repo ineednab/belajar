@@ -5,6 +5,7 @@ import { PrimaryButton } from '@/components/primary-button';
 import { ProfileSelector } from '@/components/profile-selector';
 import { Screen } from '@/components/screen';
 import { useProfiles } from '@/profiles/provider';
+import { ICONS } from '@/theme/icons';
 
 // Empty state until Epic 6 (Memory) adds the timeline.
 export default function MemoryScreen() {
@@ -14,7 +15,7 @@ export default function MemoryScreen() {
     <Screen>
       {activeProfile && <ProfileSelector profile={activeProfile} />}
       <EmptyState
-        icon="leaf"
+        icon={ICONS.leaf}
         title="Your memories will appear here, slowly fading with time."
         body="Write your first entry to start building your timeline.">
         <PrimaryButton label="Write your first entry" onPress={() => router.navigate('/')} />

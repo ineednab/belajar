@@ -1,12 +1,13 @@
-import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
+import { Icon } from '@/components/icon';
 import { ProfileAvatar } from '@/components/profile-avatar';
 import { SecondaryButton } from '@/components/secondary-button';
 import { TextButton } from '@/components/profile-form';
 import { useProfiles } from '@/profiles/provider';
+import { ICONS } from '@/theme/icons';
 import { colors, spacing } from '@/theme/tokens';
 
 /** Profile switcher sheet (PRD §6 Today: profile selector). */
@@ -38,7 +39,7 @@ export default function ProfilesSheet() {
               <AppText variant="label" style={styles.name} numberOfLines={1}>
                 {profile.name}
               </AppText>
-              {active && <SymbolView name="checkmark" size={18} tintColor={colors.primaryInk} />}
+              {active && <Icon icon={ICONS.check} size={18} color={colors.primaryInk} />}
             </Pressable>
             <TextButton
               label="Edit"
@@ -48,7 +49,7 @@ export default function ProfilesSheet() {
         );
       })}
       <View style={styles.newButton}>
-        <SecondaryButton label="New Pudar" icon="plus" onPress={() => router.push('/profile/new')} />
+        <SecondaryButton label="New Pudar" icon={ICONS.plus} onPress={() => router.push('/profile/new')} />
       </View>
     </ScrollView>
   );

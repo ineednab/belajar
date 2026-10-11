@@ -1,9 +1,10 @@
-import { SymbolView } from 'expo-symbols';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { profileSymbol } from '@/theme/profile-style';
+import { profileIcon } from '@/theme/profile-style';
 import { colors } from '@/theme/tokens';
 import { fonts } from '@/theme/typography';
+
+import { Icon } from './icon';
 
 /** Circle with the profile's icon (or its initial) on its accent color. Decorative. */
 export function ProfileAvatar({
@@ -17,7 +18,7 @@ export function ProfileAvatar({
   accentColor: string | null;
   size?: number;
 }) {
-  const symbol = profileSymbol(icon);
+  const symbol = profileIcon(icon);
   return (
     <View
       accessible={false}
@@ -28,7 +29,7 @@ export function ProfileAvatar({
         { backgroundColor: accentColor ?? colors.secondary },
       ]}>
       {symbol ? (
-        <SymbolView name={symbol} size={size * 0.5} tintColor={colors.text} />
+        <Icon icon={symbol} size={size * 0.5} color={colors.text} />
       ) : (
         <Text style={[styles.initial, { fontSize: size * 0.45 }]}>
           {Array.from(name.trim())[0]?.toUpperCase() ?? ''}

@@ -1,10 +1,11 @@
-import { SymbolView, type SFSymbol } from 'expo-symbols';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import type { IconSpec } from '@/theme/icons';
 import { colors, spacing } from '@/theme/tokens';
 
 import { AppText } from './app-text';
+import { Icon } from './icon';
 
 /** Centered icon, serif title, short explanation and one action. */
 export function EmptyState({
@@ -13,7 +14,7 @@ export function EmptyState({
   body,
   children,
 }: {
-  icon: SFSymbol;
+  icon: IconSpec;
   title: string;
   body: string;
   children?: ReactNode;
@@ -21,7 +22,7 @@ export function EmptyState({
   return (
     <View style={styles.container}>
       <View style={styles.iconCircle} accessible={false} importantForAccessibility="no-hide-descendants">
-        <SymbolView name={icon} size={36} tintColor={colors.primaryInk} />
+        <Icon icon={icon} size={36} color={colors.primaryInk} />
       </View>
       <AppText variant="heading" style={styles.center} accessibilityRole="header">
         {title}

@@ -22,6 +22,8 @@ describe('Blush Peach contrast (WCAG AA)', () => {
   it.each([
     ['neutral quick-log icon', colors.neutralIcon, colors.neutralBg],
     ['Chose myself icon', colors.selfGreenInk, colors.selfGreenBg],
+    ['selected neutral quick-log icon', colors.onPrimaryInk, colors.neutralIcon],
+    ['selected Chose myself icon', colors.onPrimaryInk, colors.selfGreenInk],
   ])('%s ≥ 3:1', (_, foreground, background) => {
     expect(contrastRatio(foreground, background)).toBeGreaterThanOrEqual(NON_TEXT_AA);
   });

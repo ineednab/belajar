@@ -114,3 +114,14 @@ export function localDateToDate(date: LocalDate): Date {
   const utc = new Date(parse(date));
   return new Date(utc.getUTCFullYear(), utc.getUTCMonth(), utc.getUTCDate(), 12);
 }
+
+/**
+ * Converts expo-localization's `firstWeekday` (1 = Sunday … 7 = Saturday) to the JS day
+ * number `weekContaining` expects. Falls back to Monday when the locale doesn't say (PRD §6).
+ */
+export function weekStartsOnFromLocale(firstWeekday: number | null | undefined): number {
+  if (firstWeekday && Number.isInteger(firstWeekday) && firstWeekday >= 1 && firstWeekday <= 7) {
+    return firstWeekday - 1;
+  }
+  return 1;
+}

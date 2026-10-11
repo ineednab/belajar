@@ -1,4 +1,4 @@
-import { Fraunces_600SemiBold } from '@expo-google-fonts/fraunces';
+import { Fraunces_400Regular } from '@expo-google-fonts/fraunces';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -10,14 +10,14 @@ import { colors } from './tokens';
 
 /** Passed to `useFonts` in the root layout. */
 export const fontAssets = {
-  Fraunces_600SemiBold,
+  Fraunces_400Regular,
   Inter_400Regular,
   Inter_500Medium,
   Inter_600SemiBold,
 };
 
 export const fonts = {
-  serif: 'Fraunces_600SemiBold',
+  serif: 'Fraunces_400Regular',
   sans: 'Inter_400Regular',
   sansMedium: 'Inter_500Medium',
   sansSemiBold: 'Inter_600SemiBold',

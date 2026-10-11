@@ -8,6 +8,7 @@ import {
   toLocalDate,
   todayLocal,
   weekContaining,
+  weekStartsOnFromLocale,
 } from '../date';
 
 // These tests run once per timezone via `npm run test:tz` (scripts/test-tz.mjs).
@@ -217,5 +218,19 @@ describe('localDateToDate', () => {
 
   it('rejects invalid dates', () => {
     expect(() => localDateToDate('2026-02-30')).toThrow(RangeError);
+  });
+});
+
+describe('weekStartsOnFromLocale', () => {
+  it('maps 1–7 (Sunday first) to 0–6', () => {
+    expect(weekStartsOnFromLocale(1)).toBe(0);
+    expect(weekStartsOnFromLocale(2)).toBe(1);
+    expect(weekStartsOnFromLocale(7)).toBe(6);
+  });
+
+  it('falls back to Monday', () => {
+    expect(weekStartsOnFromLocale(null)).toBe(1);
+    expect(weekStartsOnFromLocale(undefined)).toBe(1);
+    expect(weekStartsOnFromLocale(0)).toBe(1);
   });
 });

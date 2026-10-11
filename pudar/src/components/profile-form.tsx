@@ -1,5 +1,4 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { SymbolView } from 'expo-symbols';
 import { useState, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
@@ -16,6 +15,7 @@ import { colors, radii, spacing } from '@/theme/tokens';
 import { fonts, typography } from '@/theme/typography';
 
 import { AppText } from './app-text';
+import { Icon } from './icon';
 import { PrimaryButton } from './primary-button';
 import { ProfileAvatar } from './profile-avatar';
 
@@ -92,7 +92,7 @@ export function ProfileForm({
                 label={icon.label}
                 selected={selected}
                 onPress={() => set('icon', selected ? null : icon.key)}>
-                <SymbolView name={icon.symbol} size={20} tintColor={colors.text} />
+                <Icon icon={icon.icon} size={20} color={colors.text} />
               </Choice>
             );
           })}
